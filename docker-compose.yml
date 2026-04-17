@@ -1,0 +1,21 @@
+name: pgroot
+
+services:
+  zod:
+    build: .
+    container_name: zod
+    volumes:
+      - .:/var/www
+    profiles:
+      - http
+      - cli
+      - test
+
+  composer:
+    image: composer:2.2
+    container_name: composer
+    volumes:
+      - .:/app
+    working_dir: /app
+    profiles:
+      - deps

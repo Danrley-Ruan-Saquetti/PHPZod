@@ -1,0 +1,12 @@
+{
+  "name": "root/www",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "Zod\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=5.6"
+  }
+}
