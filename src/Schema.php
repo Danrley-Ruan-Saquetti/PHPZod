@@ -88,6 +88,20 @@ abstract class Schema {
   }
 
   /**
+   * @param callable $callable
+   * @param null|string|callable $message
+   * @return static
+   */
+  public function refine($callable, $message = null) {
+    return $this->addRule(new Rule(
+      'refinement',
+      'custom',
+      $callable,
+      $message ?: ''
+    ));
+  }
+
+  /**
    * @param Rule $rule
    * @return static
    */
