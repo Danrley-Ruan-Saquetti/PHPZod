@@ -7,7 +7,6 @@ abstract class Schema {
   protected $rules = [];
   protected $transforms = [];
   protected $isOptional = false;
-  protected $isNullable = false;
 
   /**
    * @param mixed $value
@@ -23,7 +22,7 @@ abstract class Schema {
    */
   protected function _parse($value, $path = []) {
     if (is_null($value)) {
-      if ($this->isNullable || $this->isOptional) {
+      if ($this->isOptional) {
         return ParseResult::ok();
       }
 
@@ -58,7 +57,7 @@ abstract class Schema {
     $errors = [];
 
     foreach ($this->rules as $rule) {
-      if (!$rule->validate($value)) {
+      if ($rule->validate($value) === false) {
         $errors[] = new ZodError($path, $rule->resolveMessage($value), $rule->code);
       }
     }
@@ -128,16 +127,6 @@ abstract class Schema {
   public function optional() {
     $clone = clone $this;
     $clone->isOptional = true;
-
-    return $clone;
-  }
-
-  /**
-   * @return static
-   */
-  public function nullable() {
-    $clone = clone $this;
-    $clone->isNullable = true;
 
     return $clone;
   }
