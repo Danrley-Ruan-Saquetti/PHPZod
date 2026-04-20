@@ -13,13 +13,6 @@ abstract class Schema {
    * @param array $path
    * @return ParseResult
    */
-  abstract protected function parseType($value, $path = []);
-
-  /**
-   * @param mixed $value
-   * @param array $path
-   * @return ParseResult
-   */
   protected function _parse($value, $path = []) {
     if (is_null($value)) {
       if ($this->isOptional) {
@@ -47,6 +40,13 @@ abstract class Schema {
 
     return ParseResult::ok($value);
   }
+
+  /**
+   * @param mixed $value
+   * @param array $path
+   * @return ParseResult
+   */
+  abstract protected function parseType($value, $path = []);
 
   /**
    * @param mixed $value
