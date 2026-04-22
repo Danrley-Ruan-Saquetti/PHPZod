@@ -31,25 +31,33 @@ class ArraySchema extends Schema {
   /**
    * @inheritDoc
    */
-  protected function _parse($value, $path = []) {
-    if (is_null($value)) {
-      if ($this->hasDefault) {
-        $value = is_callable($this->default) ? call_user_func($this->default) : $this->default;
-      } else if ($this->isOptional) {
-        return ParseResult::ok();
-      } else {
-        return ParseResult::fail([new ZodError($path, 'Value is required', 'required')]);
+  protected function parseType($value, $path = []) {
+    if ($this->coerce && is_string($value)) {
+      try {
+        $decoded = json_decode($value, true);
+
+        if (is_array($decoded)) {
+          return ParseResult::ok($decoded);
+        }
+      } catch (\Exception $e) {
       }
     }
 
-    $typeResult = $this->parseType($value, $path);
-
-    if (!$typeResult->success) {
-      return $typeResult;
+    if (!is_array($value)) {
+      return ParseResult::fail([new ZodError($path, 'Expected array, received ' . gettype($value), 'invalid_type')]);
     }
 
-    $value = $typeResult->data;
+    if ($this->isAssociativeArray($value)) {
+      return ParseResult::fail([new ZodError($path, 'Expected indexed array, received object', 'invalid_type')]);
+    }
 
+    return ParseResult::ok($value);
+  }
+
+  /**
+   * @inheritDoc
+   */
+  protected function validateType($value, $path = []) {
     $parsedValue = [];
     $errors = [];
 
@@ -72,41 +80,7 @@ class ArraySchema extends Schema {
       return ParseResult::fail($errors);
     }
 
-    $ruleErrors = $this->validateRules($parsedValue, $path);
-
-    if (!empty($ruleErrors)) {
-      return ParseResult::fail($ruleErrors);
-    }
-
-    $parsedValue = $this->applyTransforms($parsedValue);
-
     return ParseResult::ok($parsedValue);
-  }
-
-  /**
-   * @inheritDoc
-   */
-  protected function parseType($value, $path = []) {
-    if ($this->coerce && is_string($value)) {
-      try {
-        $decoded = json_decode($value, true);
-
-        if (is_array($decoded)) {
-          return ParseResult::ok($decoded);
-        }
-      } catch (\Exception $e) {
-      }
-    }
-
-    if (!is_array($value)) {
-      return ParseResult::fail([new ZodError($path, 'Expected array, received ' . gettype($value), 'invalid_type')]);
-    }
-
-    if ($this->isAssociativeArray($value)) {
-      return ParseResult::fail([new ZodError($path, 'Expected indexed array, received object', 'invalid_type')]);
-    }
-
-    return ParseResult::ok($value);
   }
 
   /**

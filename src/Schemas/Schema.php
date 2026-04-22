@@ -52,6 +52,14 @@ abstract class Schema {
 
     $value = $typeResult->data;
 
+    $typeResult = $this->validateType($value, $path);
+
+    if (!$typeResult->success) {
+      return $typeResult;
+    }
+
+    $value = $typeResult->data;
+
     $errors = $this->validateRules($value, $path);
 
     if (!empty($errors)) {
@@ -69,6 +77,15 @@ abstract class Schema {
    * @return ParseResult
    */
   abstract protected function parseType($value, $path = []);
+
+  /**
+   * @param mixed $value
+   * @param array $path
+   * @return ParseResult
+   */
+  protected function validateType($value, $path = []) {
+    return ParseResult::ok($value);
+  }
 
   /**
    * @param mixed $value
@@ -149,7 +166,7 @@ abstract class Schema {
    * @param mixed|callable $value
    * @return static
    */
-  public function default($value) {
+  public function _default($value) {
     $clone = clone $this;
     $clone->default = $value;
     $clone->hasDefault = true;

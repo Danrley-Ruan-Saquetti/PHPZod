@@ -2,6 +2,7 @@
 
 namespace Zod\Schemas\Complex;
 
+use stdClass;
 use Zod\Schemas\Schema;
 use Zod\Results\ParseResult;
 use Zod\Errors\ZodError;
@@ -36,26 +37,27 @@ class ObjectSchema extends Schema {
   /**
    * @inheritDoc
    */
-  protected function _parse($value, $path = []) {
-    if (is_null($value)) {
-      if ($this->hasDefault) {
-        $value = is_callable($this->default) ? call_user_func($this->default) : $this->default;
-      } else if ($this->isOptional) {
-        return ParseResult::ok();
-      } else {
-        return ParseResult::fail([new ZodError($path, 'Value is required', 'required')]);
+  protected function parseType($value, $path = []) {
+    if ($this->coerce && is_array($value)) {
+      if (!$this->isAssociativeArray($value)) {
+        return ParseResult::fail([new ZodError($path, 'Expected object or associative array, received indexed array', 'invalid_type')]);
       }
+
+      return ParseResult::ok((object) $value);
     }
 
-    $typeResult = $this->parseType($value, $path);
-
-    if (!$typeResult->success) {
-      return $typeResult;
+    if (!is_object($value)) {
+      return ParseResult::fail([new ZodError($path, 'Expected object, received ' . gettype($value), 'invalid_type')]);
     }
 
-    $value = $typeResult->data;
+    return ParseResult::ok($value);
+  }
 
-    $parsedValue = [];
+  /**
+   * @inheritDoc
+   */
+  protected function validateType($value, $path = []) {
+    $parsedValue = new stdClass();
     $errors = [];
 
     foreach ($this->shape as $key => $schema) {
@@ -67,7 +69,7 @@ class ObjectSchema extends Schema {
       if (!$result->success) {
         $errors = array_merge($errors, $result->errors);
       } else {
-        $parsedValue[$key] = $result->data;
+        $parsedValue->$key = $result->data;
       }
     }
 
@@ -87,14 +89,14 @@ class ObjectSchema extends Schema {
           if (!$result->success) {
             $errors = array_merge($errors, $result->errors);
           } else {
-            $parsedValue[$key] = $result->data;
+            $parsedValue->$key = $result->data;
           }
         }
       }
     } else {
       foreach ($value as $key => $val) {
         if (!isset($this->shape[$key])) {
-          $parsedValue[$key] = $val;
+          $parsedValue->$key = $val;
         }
       }
     }
@@ -103,40 +105,7 @@ class ObjectSchema extends Schema {
       return ParseResult::fail($errors);
     }
 
-    $ruleErrors = $this->validateRules($parsedValue, $path);
-
-    if (!empty($ruleErrors)) {
-      return ParseResult::fail($ruleErrors);
-    }
-
-    $parsedValue = $this->applyTransforms($parsedValue);
-
     return ParseResult::ok($parsedValue);
-  }
-
-  /**
-   * @inheritDoc
-   */
-  protected function parseType($value, $path = []) {
-    if ($this->coerce && is_array($value)) {
-      if (!$this->isAssociativeArray($value)) {
-        return ParseResult::fail([new ZodError($path, 'Expected object or associative array, received indexed array', 'invalid_type')]);
-      }
-
-      var_dump($value);
-
-      return ParseResult::ok((object) $value);
-    }
-
-    if (!is_array($value)) {
-      return ParseResult::fail([new ZodError($path, 'Expected object, received ' . gettype($value), 'invalid_type')]);
-    }
-
-    if (!$this->isAssociativeArray($value)) {
-      return ParseResult::fail([new ZodError($path, 'Expected object (associative array), received indexed array', 'invalid_type')]);
-    }
-
-    return ParseResult::ok($value);
   }
 
   /**
