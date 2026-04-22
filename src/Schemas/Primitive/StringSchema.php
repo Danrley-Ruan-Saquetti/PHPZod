@@ -227,18 +227,27 @@ class StringSchema extends Schema {
     ));
   }
 
+  /**
+   * @return static
+   */
   public function trim() {
     return $this->transform(function ($value) {
       return trim($value);
     });
   }
 
+  /**
+   * @return static
+   */
   public function toLowerCase() {
     return $this->transform(function ($value) {
       return mb_strtolower($value);
     });
   }
 
+  /**
+   * @return static
+   */
   public function toUpperCase() {
     return $this->transform(function ($value) {
       return mb_strtoupper($value);

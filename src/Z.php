@@ -6,6 +6,7 @@ use Zod\Schemas\Primitive\StringSchema;
 use Zod\Schemas\Primitive\NumberSchema;
 use Zod\Schemas\Complex\ObjectSchema;
 use Zod\Schemas\Complex\ArraySchema;
+use Zod\Schemas\Primitive\BooleanSchema;
 use Zod\Schemas\Schema;
 
 class Z {
@@ -16,6 +17,10 @@ class Z {
 
   public static function string() {
     return new StringSchema();
+  }
+
+  public static function boolean() {
+    return new BooleanSchema();
   }
 
   /**
