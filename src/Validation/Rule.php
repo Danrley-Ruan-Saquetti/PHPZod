@@ -1,6 +1,6 @@
 <?php
 
-namespace Zod;
+namespace Zod\Validation;
 
 class Rule {
 

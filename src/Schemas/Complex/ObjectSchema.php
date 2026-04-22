@@ -1,10 +1,10 @@
 <?php
 
-namespace Zod\Types;
+namespace Zod\Schemas\Complex;
 
-use Zod\ParseResult;
-use Zod\Schema;
-use Zod\ZodError;
+use Zod\Schemas\Schema;
+use Zod\Results\ParseResult;
+use Zod\Errors\ZodError;
 
 class ObjectSchema extends Schema {
 

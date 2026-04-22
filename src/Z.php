@@ -2,9 +2,10 @@
 
 namespace Zod;
 
-use Zod\Types\NumberSchema;
-use Zod\Types\ObjectSchema;
-use Zod\Types\StringSchema;
+use Zod\Schemas\Primitive\StringSchema;
+use Zod\Schemas\Primitive\NumberSchema;
+use Zod\Schemas\Complex\ObjectSchema;
+use Zod\Schemas\Schema;
 
 class Z {
 

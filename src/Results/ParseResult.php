@@ -1,6 +1,8 @@
 <?php
 
-namespace Zod;
+namespace Zod\Results;
+
+use Zod\Errors\ZodError;
 
 class ParseResult {
 

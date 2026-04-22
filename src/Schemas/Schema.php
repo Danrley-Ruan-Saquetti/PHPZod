@@ -1,6 +1,11 @@
 <?php
 
-namespace Zod;
+namespace Zod\Schemas;
+
+use Zod\Results\ParseResult;
+use Zod\Errors\ZodError;
+use Zod\Errors\ZodException;
+use Zod\Validation\Rule;
 
 abstract class Schema {
 

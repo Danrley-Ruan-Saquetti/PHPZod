@@ -1,11 +1,11 @@
 <?php
 
-namespace Zod\Types;
+namespace Zod\Schemas\Primitive;
 
-use Zod\ParseResult;
-use Zod\Rule;
-use Zod\Schema;
-use Zod\ZodError;
+use Zod\Schemas\Schema;
+use Zod\Results\ParseResult;
+use Zod\Errors\ZodError;
+use Zod\Validation\Rule;
 
 class StringSchema extends Schema {
 
