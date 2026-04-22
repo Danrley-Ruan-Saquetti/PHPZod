@@ -5,6 +5,7 @@ namespace Zod;
 use Zod\Schemas\Primitive\StringSchema;
 use Zod\Schemas\Primitive\NumberSchema;
 use Zod\Schemas\Complex\ObjectSchema;
+use Zod\Schemas\Complex\ArraySchema;
 use Zod\Schemas\Schema;
 
 class Z {
@@ -23,5 +24,13 @@ class Z {
    */
   public static function object($shape = []) {
     return new ObjectSchema($shape);
+  }
+
+  /**
+   * @param Schema $schema
+   * @return ArraySchema
+   */
+  public static function _array($schema = null) {
+    return new ArraySchema($schema);
   }
 }
