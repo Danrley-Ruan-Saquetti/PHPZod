@@ -128,6 +128,14 @@ abstract class Schema {
 
   /**
    * @param callable $callable
+   * @return static
+   */
+  public function apply($callable) {
+    return call_user_func($callable, $this);
+  }
+
+  /**
+   * @param callable $callable
    * @param null|string|callable $message
    * @return static
    */
