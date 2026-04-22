@@ -21,6 +21,18 @@ class ObjectSchema extends Schema {
     $this->shape = $shape;
   }
 
+  public function __clone() {
+    parent::__clone();
+
+    $this->shape = array_map(function ($schema) {
+      return clone $schema;
+    }, $this->shape);
+
+    if ($this->catchall !== null) {
+      $this->catchall = clone $this->catchall;
+    }
+  }
+
   /**
    * @inheritDoc
    */

@@ -9,9 +9,18 @@ use Zod\Validation\Rule;
 
 abstract class Schema {
 
+  /** @var Rule[] */
   protected $rules = [];
   protected $transforms = [];
   protected $isOptional = false;
+
+  public function __clone() {
+    $this->rules = array_map(function ($rule) {
+      return clone $rule;
+    }, $this->rules);
+
+    $this->transforms = array_values($this->transforms);
+  }
 
   /**
    * @param mixed $value
