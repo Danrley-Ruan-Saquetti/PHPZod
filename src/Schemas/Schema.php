@@ -13,6 +13,8 @@ abstract class Schema {
   protected $rules = [];
   protected $transforms = [];
   protected $isOptional = false;
+  protected $default = null;
+  protected $hasDefault = false;
 
   public function __clone() {
     $this->rules = array_map(function ($rule) {
@@ -20,6 +22,10 @@ abstract class Schema {
     }, $this->rules);
 
     $this->transforms = array_values($this->transforms);
+    
+    if ($this->hasDefault && is_object($this->default)) {
+      $this->default = clone $this->default;
+    }
   }
 
   /**
@@ -29,11 +35,13 @@ abstract class Schema {
    */
   protected function _parse($value, $path = []) {
     if (is_null($value)) {
-      if ($this->isOptional) {
+      if ($this->hasDefault) {
+        $value = is_callable($this->default) ? call_user_func($this->default) : $this->default;
+      } else if ($this->isOptional) {
         return ParseResult::ok();
+      } else {
+        return ParseResult::fail([new ZodError($path, 'Value is required', 'required')]);
       }
-
-      return ParseResult::fail([new ZodError($path, 'Value is required', 'required')]);
     }
 
     $typeResult = $this->parseType($value, $path);
@@ -133,6 +141,18 @@ abstract class Schema {
   public function transform($callable) {
     $clone = clone $this;
     $clone->transforms[] = $callable;
+
+    return $clone;
+  }
+
+  /**
+   * @param mixed|callable $value
+   * @return static
+   */
+  public function default($value) {
+    $clone = clone $this;
+    $clone->default = $value;
+    $clone->hasDefault = true;
 
     return $clone;
   }

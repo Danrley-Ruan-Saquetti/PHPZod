@@ -38,11 +38,13 @@ class ObjectSchema extends Schema {
    */
   protected function _parse($value, $path = []) {
     if (is_null($value)) {
-      if ($this->isOptional) {
+      if ($this->hasDefault) {
+        $value = is_callable($this->default) ? call_user_func($this->default) : $this->default;
+      } else if ($this->isOptional) {
         return ParseResult::ok();
+      } else {
+        return ParseResult::fail([new ZodError($path, 'Value is required', 'required')]);
       }
-
-      return ParseResult::fail([new ZodError($path, 'Value is required', 'required')]);
     }
 
     $typeResult = $this->parseType($value, $path);
