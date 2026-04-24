@@ -6,38 +6,39 @@ use Zod\Results\ParseResult;
 use Zod\Errors\ZodError;
 use Zod\Errors\ZodException;
 use Zod\Validation\Rule;
+use Closure;
 
 abstract class Schema {
 
   /** @var Rule[] */
-  protected $rules = [];
-  protected $transforms = [];
-  protected $isOptional = false;
-  protected $default = null;
-  protected $hasDefault = false;
+  protected array $rules = [];
+  /** @var Closure[] */
+  protected array $transforms = [];
+  protected bool $isOptional = false;
+  protected mixed $default = null;
+  protected bool $hasDefault = false;
 
-  public function __clone() {
-    $this->rules = array_map(function ($rule) {
-      return clone $rule;
-    }, $this->rules);
+  public function __clone(): void {
+    $this->rules = array_map(
+      static fn(Rule $rule): Rule => clone $rule,
+      $this->rules
+    );
 
     $this->transforms = array_values($this->transforms);
-    
+
     if ($this->hasDefault && is_object($this->default)) {
       $this->default = clone $this->default;
     }
   }
 
   /**
-   * @param mixed $value
-   * @param array $path
-   * @return ParseResult
+   * @param string[] $path
    */
-  protected function _parse($value, $path = []) {
+  protected function _parse(mixed $value, array $path = []): ParseResult {
     if (is_null($value)) {
       if ($this->hasDefault) {
-        $value = is_callable($this->default) ? call_user_func($this->default) : $this->default;
-      } else if ($this->isOptional) {
+        $value = $this->default instanceof Closure ? ($this->default)() : $this->default;
+      } elseif ($this->isOptional) {
         return ParseResult::ok();
       } else {
         return ParseResult::fail([new ZodError($path, 'Value is required', 'required')]);
@@ -72,27 +73,22 @@ abstract class Schema {
   }
 
   /**
-   * @param mixed $value
-   * @param array $path
-   * @return ParseResult
+   * @param string[] $path
    */
-  abstract protected function parseType($value, $path = []);
+  abstract protected function parseType(mixed $value, array $path = []): ParseResult;
 
   /**
-   * @param mixed $value
-   * @param array $path
-   * @return ParseResult
+   * @param string[] $path
    */
-  protected function validateType($value, $path = []) {
+  protected function validateType(mixed $value, array $path = []): ParseResult {
     return ParseResult::ok($value);
   }
 
   /**
-   * @param mixed $value
    * @param string[] $path
    * @return ZodError[]
    */
-  protected function validateRules($value, $path = []) {
+  protected function validateRules(mixed $value, array $path = []): array {
     $errors = [];
 
     foreach ($this->rules as $rule) {
@@ -104,11 +100,7 @@ abstract class Schema {
     return $errors;
   }
 
-  /**
-   * @param mixed $value
-   * @return mixed
-   */
-  public function parse($value) {
+  public function parse(mixed $value): mixed {
     $result = $this->safeParse($value);
 
     if (!$result->success) {
@@ -118,63 +110,38 @@ abstract class Schema {
     return $result->data;
   }
 
-  /**
-   * @param mixed $value
-   * @return ParseResult
-   */
-  public function safeParse($value) {
+  public function safeParse(mixed $value): ParseResult {
     return $this->_parse($value, []);
   }
 
-  /**
-   * @param callable $callable
-   * @return static
-   */
-  public function apply($callable) {
-    return call_user_func($callable, $this);
+  public function apply(Closure $callable): static {
+    return $callable($this);
   }
 
-  /**
-   * @param callable $callable
-   * @param null|string|callable $message
-   * @return static
-   */
-  public function refine($callable, $message = null) {
+  public function refine(Closure $callable, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
       'refinement',
       'custom',
       $callable,
-      $message ?: ''
+      $message ?? ''
     ));
   }
 
-  /**
-   * @param Rule $rule
-   * @return static
-   */
-  protected function addRule($rule) {
+  protected function addRule(Rule $rule): static {
     $clone = clone $this;
     $clone->rules[] = $rule;
 
     return $clone;
   }
 
-  /**
-   * @param callable $callable
-   * @return static
-   */
-  public function transform($callable) {
+  public function transform(Closure $callable): static {
     $clone = clone $this;
     $clone->transforms[] = $callable;
 
     return $clone;
   }
 
-  /**
-   * @param mixed|callable $value
-   * @return static
-   */
-  public function _default($value) {
+  public function _default(mixed $value): static {
     $clone = clone $this;
     $clone->default = $value;
     $clone->hasDefault = true;
@@ -182,25 +149,26 @@ abstract class Schema {
     return $clone;
   }
 
-  /**
-   * @param mixed $value
-   * @return mixed
-   */
-  protected function applyTransforms($value) {
+  protected function applyTransforms(mixed $value): mixed {
     foreach ($this->transforms as $fn) {
-      $value = call_user_func($fn, $value);
+      $value = $fn($value);
     }
 
     return $value;
   }
 
-  /**
-   * @return static
-   */
-  public function optional() {
+  public function optional(): static {
     $clone = clone $this;
     $clone->isOptional = true;
 
     return $clone;
+  }
+
+  protected function isAssociativeArray(array $array): bool {
+    if (empty($array)) {
+      return false;
+    }
+
+    return array_keys($array) !== range(0, count($array) - 1);
   }
 }

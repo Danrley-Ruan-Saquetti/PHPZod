@@ -4,45 +4,40 @@ namespace Zod\Errors;
 
 use RuntimeException;
 
-class ZodException extends RuntimeException {
-
-  /** @var ZodError[] */
-  private $errors = [];
+final class ZodException extends RuntimeException {
 
   /**
    * @param ZodError[] $errors
    */
-  public function __construct($errors) {
+  public function __construct(
+    private array $errors = []
+  ) {
     parent::__construct($this->buildMessage(), 0, null);
-
-    $this->errors = $errors;
   }
 
   /**
    * @return ZodError[]
    */
-  public function getErrors() {
+  public function getErrors(): array {
     return $this->errors;
   }
 
-  /**
-   * @return ZodError|null
-   */
-  public function getFirstError() {
-    return isset($this->errors[0]) ? $this->errors[0] : null;
+  public function getFirstError(): ?ZodError {
+    return $this->errors[0] ?? null;
   }
 
   /**
    * @return array<string, string[]>
    */
-  public function getMessagesByPath() {
+  public function getMessagesByPath(): array {
     $grouped = $this->getErrorsByPath();
     $result = [];
 
     foreach ($grouped as $path => $errors) {
-      $result[$path] = array_map(function (ZodError $e) {
-        return $e->message;
-      }, $errors);
+      $result[$path] = array_map(
+        static fn(ZodError $e): string => $e->message,
+        $errors
+      );
     }
 
     return $result;
@@ -51,7 +46,7 @@ class ZodException extends RuntimeException {
   /**
    * @return array<string, string>
    */
-  public function getFlatMessages() {
+  public function getFlatMessages(): array {
     $grouped = $this->getErrorsByPath();
     $result = [];
 
@@ -62,50 +57,43 @@ class ZodException extends RuntimeException {
     return $result;
   }
 
-  /**
-   * @param string $path
-   * @return bool
-   */
-  public function hasErrorAt($path) {
+  public function hasErrorAt(string $path): bool {
     $grouped = $this->getErrorsByPath();
 
     return isset($grouped[$path]);
   }
 
   /**
-   * @param string $path
    * @return ZodError[]
    */
-  public function getErrorsAt($path) {
+  public function getErrorsAt(string $path): array {
     $grouped = $this->getErrorsByPath();
 
-    return isset($grouped[$path]) ? $grouped[$path] : [];
+    return $grouped[$path] ?? [];
   }
 
   /**
-   * @return array{code: string, message: string, path: string[]}[]
+   * @return array<int, array{code: string, message: string, path: string[]}>
    */
-  public function toArray() {
-    return array_map(function (ZodError $e) {
-      return [
+  public function toArray(): array {
+    return array_map(
+      static fn(ZodError $e): array => [
         'path' => $e->path,
         'message' => $e->message,
         'code' => $e->code,
-      ];
-    }, $this->errors);
+      ],
+      $this->errors
+    );
   }
 
-  /**
-   * @return string
-   */
-  public function toJson() {
-    return json_encode($this->toArray(), JSON_UNESCAPED_UNICODE);
+  public function toJson(): string {
+    return json_encode($this->toArray(), JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
   }
 
   /**
    * @return array<string, ZodError[]>
    */
-  public function getErrorsByPath() {
+  public function getErrorsByPath(): array {
     $grouped = [];
 
     foreach ($this->errors as $error) {
@@ -121,15 +109,11 @@ class ZodException extends RuntimeException {
     return $grouped;
   }
 
-  /**
-   * @return string
-   */
-  private function buildMessage() {
-    $lines = array_map(function (ZodError $e) {
-      $path = $e->pathString() ?: '(root)';
-
-      return "[{$path}] {$e->message} (code: {$e->code})";
-    }, $this->errors);
+  private function buildMessage(): string {
+    $lines = array_map(
+      static fn(ZodError $e): string => '[' . ($e->pathString() ?: '(root)') . "] {$e->message} (code: {$e->code})",
+      $this->errors
+    );
 
     return 'Validation failed: ' . implode(' | ', $lines);
   }

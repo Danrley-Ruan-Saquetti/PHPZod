@@ -2,25 +2,22 @@
 
 namespace Zod\Schemas\Complex;
 
+use Closure;
 use Zod\Schemas\Schema;
 use Zod\Results\ParseResult;
 use Zod\Errors\ZodError;
 use Zod\Validation\Rule;
 
-class ArraySchema extends Schema {
+final class ArraySchema extends Schema {
 
-  /** @var Schema */
-  protected $elementSchema = null;
-  protected $coerce = false;
+  protected bool $coerce = false;
 
-  /**
-   * @param ?Schema $elementSchema
-   */
-  public function __construct($elementSchema = null) {
-    $this->elementSchema = $elementSchema;
+  public function __construct(
+    protected ?Schema $elementSchema = null
+  ) {
   }
 
-  public function __clone() {
+  public function __clone(): void {
     parent::__clone();
 
     if ($this->elementSchema !== null) {
@@ -28,18 +25,16 @@ class ArraySchema extends Schema {
     }
   }
 
-  /**
-   * @inheritDoc
-   */
-  protected function parseType($value, $path = []) {
+  protected function parseType(mixed $value, array $path = []): ParseResult {
     if ($this->coerce && is_string($value)) {
       try {
-        $decoded = json_decode($value, true);
+        $decoded = json_decode($value, true, flags: JSON_THROW_ON_ERROR);
 
         if (is_array($decoded)) {
           return ParseResult::ok($decoded);
         }
-      } catch (\Exception $e) {
+      } catch (\Exception) {
+        // Continue with default validation
       }
     }
 
@@ -54,10 +49,7 @@ class ArraySchema extends Schema {
     return ParseResult::ok($value);
   }
 
-  /**
-   * @inheritDoc
-   */
-  protected function validateType($value, $path = []) {
+  protected function validateType(mixed $value, array $path = []): ParseResult {
     $parsedValue = [];
     $errors = [];
 
@@ -83,121 +75,56 @@ class ArraySchema extends Schema {
     return ParseResult::ok($parsedValue);
   }
 
-  /**
-   * @param Schema $schema
-   * @return static
-   */
-  public function of($schema) {
+  public function of(Schema $schema): static {
     $clone = clone $this;
     $clone->elementSchema = $schema;
 
     return $clone;
   }
 
-  /**
-   * @param int $length
-   * @param string|null $message
-   * @return static
-   */
-  public function length($length, $message = null) {
+  public function length(int $length, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
       'length',
       'invalid_type',
-      function ($value, $params) {
-        return count($value) === $params['length'];
-      },
-      $message ?: function ($value, $params) {
-        return "Array must have exactly {$params['length']} elements";
-      },
+      static fn(array $value, array $params): bool => count($value) === $params['length'],
+      $message ?? static fn(array $value, array $params): string => "Array must have exactly {$params['length']} elements",
       ['length' => $length]
     ));
   }
 
-  /**
-   * @param int $length
-   * @param string|null $message
-   * @return static
-   */
-  public function min($length, $message = null) {
+  public function min(int $length, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
       'min',
       'too_small',
-      function ($value, $params) {
-        return count($value) >= $params['length'];
-      },
-      $message ?: function ($value, $params) {
-        return "Array must have at least {$params['length']} elements";
-      },
+      static fn(array $value, array $params): bool => count($value) >= $params['length'],
+      $message ?? static fn(array $value, array $params): string => "Array must have at least {$params['length']} elements",
       ['length' => $length]
     ));
   }
 
-  /**
-   * @param int $length
-   * @param string|null $message
-   * @return static
-   */
-  public function max($length, $message = null) {
+  public function max(int $length, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
       'max',
       'too_big',
-      function ($value, $params) {
-        return count($value) <= $params['length'];
-      },
-      $message ?: function ($value, $params) {
-        return "Array must have at most {$params['length']} elements";
-      },
+      static fn(array $value, array $params): bool => count($value) <= $params['length'],
+      $message ?? static fn(array $value, array $params): string => "Array must have at most {$params['length']} elements",
       ['length' => $length]
     ));
   }
 
-  /**
-   * @param string|null $message
-   * @return static
-   */
-  public function nonempty($message = null) {
+  public function nonempty(string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
       'nonempty',
       'too_small',
-      function ($value) {
-        return count($value) > 0;
-      },
-      $message ?: 'Array must not be empty'
+      static fn(array $value): bool => count($value) > 0,
+      $message ?? 'Array must not be empty'
     ));
   }
 
-  /**
-   * @return static
-   */
-  public function coerce() {
+  public function coerce(): static {
     $clone = clone $this;
     $clone->coerce = true;
 
     return $clone;
-  }
-
-  /**
-   * @param mixed $arr
-   * @return bool
-   */
-  private function isAssociativeArray($arr) {
-    if (!is_array($arr)) {
-      return false;
-    }
-
-    if (empty($arr)) {
-      return false;
-    }
-
-    $keys = array_keys($arr);
-    $numKeys = count($keys);
-
-    for ($i = 0; $i < $numKeys; $i++) {
-      if ($keys[$i] !== $i) {
-        return true;
-      }
-    }
-
-    return false;
   }
 }

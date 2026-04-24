@@ -2,42 +2,38 @@
 
 namespace Zod\Schemas\Complex;
 
-use stdClass;
 use Zod\Schemas\Schema;
 use Zod\Results\ParseResult;
 use Zod\Errors\ZodError;
 
-class ObjectSchema extends Schema {
+final class ObjectSchema extends Schema {
 
-  /** @var array<string, Schema> */
-  protected $shape = [];
-  protected $coerce = false;
-  protected $strict = false;
-  protected $catchall = null;
+  protected bool $coerce = false;
+  protected bool $strict = false;
+  protected ?Schema $catchall = null;
 
   /**
    * @param array<string, Schema> $shape
    */
-  public function __construct($shape = []) {
-    $this->shape = $shape;
+  public function __construct(
+    protected array $shape = []
+  ) {
   }
 
-  public function __clone() {
+  public function __clone(): void {
     parent::__clone();
 
-    $this->shape = array_map(function ($schema) {
-      return clone $schema;
-    }, $this->shape);
+    $this->shape = array_map(
+      static fn(Schema $schema): Schema => clone $schema,
+      $this->shape
+    );
 
     if ($this->catchall !== null) {
       $this->catchall = clone $this->catchall;
     }
   }
 
-  /**
-   * @inheritDoc
-   */
-  protected function parseType($value, $path = []) {
+  protected function parseType(mixed $value, array $path = []): ParseResult {
     if ($this->coerce && is_array($value)) {
       if (!$this->isAssociativeArray($value)) {
         return ParseResult::fail([new ZodError($path, 'Expected object or associative array, received indexed array', 'invalid_type')]);
@@ -53,16 +49,13 @@ class ObjectSchema extends Schema {
     return ParseResult::ok($value);
   }
 
-  /**
-   * @inheritDoc
-   */
-  protected function validateType($value, $path = []) {
-    $parsedValue = new stdClass();
+  protected function validateType(mixed $value, array $path = []): ParseResult {
+    $parsedValue = new \stdClass();
     $errors = [];
 
     foreach ($this->shape as $key => $schema) {
       $fieldPath = array_merge($path, [$key]);
-      $fieldValue = $value->$key ?: null;
+      $fieldValue = $value->$key ?? null;
 
       $result = $schema->_parse($fieldValue, $fieldPath);
 
@@ -80,7 +73,7 @@ class ObjectSchema extends Schema {
           $errors[] = new ZodError($fieldPath, 'Unrecognized key in object', 'unrecognized_keys');
         }
       }
-    } else if ($this->catchall !== null) {
+    } elseif ($this->catchall !== null) {
       foreach ($value as $key => $val) {
         if (!isset($this->shape[$key])) {
           $fieldPath = array_merge($path, [$key]);
@@ -110,9 +103,8 @@ class ObjectSchema extends Schema {
 
   /**
    * @param array<string, Schema> $shape
-   * @return static
    */
-  public function shape($shape) {
+  public function shape(array $shape): static {
     $clone = clone $this;
     $clone->shape = $shape;
 
@@ -121,9 +113,8 @@ class ObjectSchema extends Schema {
 
   /**
    * @param string[] $keys
-   * @return static
    */
-  public function pick($keys) {
+  public function pick(array $keys): static {
     $clone = clone $this;
     $newShape = [];
 
@@ -140,9 +131,8 @@ class ObjectSchema extends Schema {
 
   /**
    * @param string[] $keys
-   * @return static
    */
-  public function omit($keys) {
+  public function omit(array $keys): static {
     $clone = clone $this;
     $keysToOmit = array_flip($keys);
     $newShape = [];
@@ -160,27 +150,19 @@ class ObjectSchema extends Schema {
 
   /**
    * @param array<string, Schema> $shape
-   * @return static
    */
-  public function extend($shape) {
+  public function extend(array $shape): static {
     $clone = clone $this;
     $clone->shape = array_merge($this->shape, $shape);
 
     return $clone;
   }
 
-  /**
-   * @param ObjectSchema $other
-   * @return static
-   */
-  public function merge($other) {
+  public function merge(self $other): static {
     return $this->extend($other->shape);
   }
 
-  /**
-   * @return static
-   */
-  public function partial() {
+  public function partial(): static {
     $clone = clone $this;
     $newShape = [];
 
@@ -193,10 +175,7 @@ class ObjectSchema extends Schema {
     return $clone;
   }
 
-  /**
-   * @return static
-   */
-  public function required() {
+  public function required(): static {
     $clone = clone $this;
     $newShape = [];
 
@@ -211,10 +190,7 @@ class ObjectSchema extends Schema {
     return $clone;
   }
 
-  /**
-   * @return static
-   */
-  public function strict() {
+  public function strict(): static {
     $clone = clone $this;
     $clone->strict = true;
     $clone->catchall = null;
@@ -222,10 +198,7 @@ class ObjectSchema extends Schema {
     return $clone;
   }
 
-  /**
-   * @return static
-   */
-  public function passthrough() {
+  public function passthrough(): static {
     $clone = clone $this;
     $clone->strict = false;
     $clone->catchall = null;
@@ -233,55 +206,21 @@ class ObjectSchema extends Schema {
     return $clone;
   }
 
-  /**
-   * @param Schema $schema
-   * @return static
-   */
-  public function catchall($schema) {
+  public function catchall(Schema $schema): static {
     $clone = clone $this;
     $clone->catchall = $schema;
 
     return $clone;
   }
 
-  /**
-   * @return static
-   */
-  public function coerce() {
+  public function coerce(): static {
     $clone = clone $this;
     $clone->coerce = true;
 
     return $clone;
   }
 
-  public function asArray() {
-    return $this->transform(function($value) {
-      return (array) $value;
-    });
-  }
-
-  /**
-   * @param mixed $arr
-   * @return bool
-   */
-  private function isAssociativeArray($arr) {
-    if (!is_array($arr)) {
-      return false;
-    }
-
-    if (empty($arr)) {
-      return true;
-    }
-
-    $keys = array_keys($arr);
-    $numKeys = count($keys);
-
-    for ($i = 0; $i < $numKeys; $i++) {
-      if ($keys[$i] !== $i) {
-        return true;
-      }
-    }
-
-    return false;
+  public function asArray(): static {
+    return $this->transform(static fn(\stdClass $value): array => (array) $value);
   }
 }

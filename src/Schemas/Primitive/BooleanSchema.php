@@ -6,14 +6,11 @@ use Zod\Schemas\Schema;
 use Zod\Results\ParseResult;
 use Zod\Errors\ZodError;
 
-class BooleanSchema extends Schema {
+final class BooleanSchema extends Schema {
 
-  protected $coerce = false;
+  protected bool $coerce = false;
 
-  /**
-   * @inheritDoc
-   */
-  protected function parseType($value, $path = []) {
+  protected function parseType(mixed $value, array $path = []): ParseResult {
     if ($this->coerce) {
       $value = $this->coerceToBoolean($value);
     }
@@ -25,11 +22,7 @@ class BooleanSchema extends Schema {
     return ParseResult::ok($value);
   }
 
-  /**
-   * @param mixed $value
-   * @return bool
-   */
-  private function coerceToBoolean($value) {
+  private function coerceToBoolean(mixed $value): bool {
     if (is_bool($value)) {
       return $value;
     }
@@ -59,10 +52,7 @@ class BooleanSchema extends Schema {
     return (bool) $value;
   }
 
-  /**
-   * @return static
-   */
-  public function coerce() {
+  public function coerce(): static {
     $clone = clone $this;
     $clone->coerce = true;
 

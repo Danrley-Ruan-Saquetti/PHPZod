@@ -4,36 +4,26 @@ namespace Zod\Results;
 
 use Zod\Errors\ZodError;
 
-class ParseResult {
-
-  public $success;
-  public $data;
-  public $errors;
+readonly final class ParseResult {
 
   /**
-   * @param bool $success
-   * @param mixed $data
    * @param ZodError[] $errors
    */
-  private function __construct($success, $data = null, $errors = []) {
-    $this->success = $success;
-    $this->data = $data;
-    $this->errors = $errors;
+  private function __construct(
+    public bool $success,
+    public mixed $data = null,
+    public array $errors = []
+  ) {
   }
 
-  /**
-   * @param mixed $data
-   * @return self
-   */
-  public static function ok($data = null) {
+  public static function ok(mixed $data = null): self {
     return new self(true, $data);
   }
 
   /**
    * @param ZodError[] $errors
-   * @return self
    */
-  public static function fail($errors) {
+  public static function fail(array $errors): self {
     return new self(false, null, $errors);
   }
 }

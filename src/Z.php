@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Zod;
 
 use Zod\Schemas\Primitive\StringSchema;
@@ -9,33 +11,31 @@ use Zod\Schemas\Complex\ArraySchema;
 use Zod\Schemas\Primitive\BooleanSchema;
 use Zod\Schemas\Schema;
 
-class Z {
+final class Z {
 
-  public static function number() {
+  public static function number(): NumberSchema {
     return new NumberSchema();
   }
 
-  public static function string() {
+  public static function string(): StringSchema {
     return new StringSchema();
   }
 
-  public static function boolean() {
+  public static function boolean(): BooleanSchema {
     return new BooleanSchema();
   }
 
   /**
    * @param array<string, Schema> $shape
-   * @return ObjectSchema
    */
-  public static function object($shape = []) {
+  public static function object(array $shape = []): ObjectSchema {
     return new ObjectSchema($shape);
   }
 
   /**
-   * @param Schema $schema
-   * @return ArraySchema
+   * @param Schema|null $schema
    */
-  public static function _array($schema = null) {
+  public static function _array(?Schema $schema = null): ArraySchema {
     return new ArraySchema($schema);
   }
 }

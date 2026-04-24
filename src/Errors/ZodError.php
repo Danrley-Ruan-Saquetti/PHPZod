@@ -2,27 +2,16 @@
 
 namespace Zod\Errors;
 
-class ZodError {
+readonly final class ZodError {
 
-  public $path;
-  public $message;
-  public $code;
-
-  /**
-   * @param array $path
-   * @param string $message
-   * @param string $code
-   */
-  public function __construct($path, $message, $code) {
-    $this->path = $path;
-    $this->message = $message;
-    $this->code = $code;
+  public function __construct(
+    public array $path,
+    public string $message,
+    public string $code,
+  ) {
   }
 
-  /**
-   * @return string
-   */
-  public function pathString() {
+  public function pathString(): string {
     return implode('.', $this->path);
   }
 }

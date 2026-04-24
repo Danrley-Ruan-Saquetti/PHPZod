@@ -2,46 +2,28 @@
 
 namespace Zod\Validation;
 
-class Rule {
+use Closure;
 
-  public $name;
-  public $code;
-  public $check;
-  public $message;
-  public $params;
+readonly final class Rule {
 
-  /**
-   * @param string $name
-   * @param string $code
-   * @param callable $check
-   * @param null|string|callable $message
-   * @param array $params
-   */
-  public function __construct($name, $code, $check, $message = null, $params = []) {
-    $this->name = $name;
-    $this->code = $code;
-    $this->check = $check;
-    $this->message = $message;
-    $this->params = $params;
+  public function __construct(
+    public string $name,
+    public string $code,
+    public Closure $check,
+    public string|Closure|null $message = null,
+    public array $params = [],
+  ) {
   }
 
-  /**
-   * @param mixed $value
-   * @return bool
-   */
-  public function validate($value) {
-    return (bool) call_user_func($this->check, $value, $this->params);
+  public function validate(mixed $value): bool {
+    return (bool) ($this->check)($value, $this->params);
   }
 
-  /**
-   * @param mixed $value
-   * @return string
-   */
-  public function resolveMessage($value) {
-    if (is_callable($this->message)) {
-      return call_user_func($this->message, $value, $this->params) ?: '';
+  public function resolveMessage(mixed $value): string {
+    if ($this->message instanceof Closure) {
+      return ($this->message)($value, $this->params) ?? '';
     }
 
-    return $this->message ?: '';
+    return $this->message ?? '';
   }
 }
