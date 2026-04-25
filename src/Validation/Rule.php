@@ -1,6 +1,6 @@
 <?php
 
-namespace Zod\Validation;
+namespace Esliph\Validation;
 
 use Closure;
 

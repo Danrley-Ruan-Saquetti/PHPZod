@@ -1,11 +1,11 @@
 <?php
 
-namespace Zod\Schemas;
+namespace Esliph\Schemas;
 
-use Zod\Results\ParseResult;
-use Zod\Errors\ZodError;
-use Zod\Errors\ZodException;
-use Zod\Validation\Rule;
+use Esliph\Results\ParseResult;
+use Esliph\Errors\ValidatorError;
+use Esliph\Errors\ValidatorException;
+use Esliph\Validation\Rule;
 use Closure;
 
 abstract class Schema {
@@ -38,10 +38,10 @@ abstract class Schema {
     if (is_null($value)) {
       if ($this->hasDefault) {
         $value = $this->default instanceof Closure ? ($this->default)() : $this->default;
-      } elseif ($this->isOptional) {
+      } else if ($this->isOptional) {
         return ParseResult::ok();
       } else {
-        return ParseResult::fail([new ZodError($path, 'Value is required', 'required')]);
+        return ParseResult::fail([new ValidatorError($path, 'Value is required', 'required')]);
       }
     }
 
@@ -86,14 +86,14 @@ abstract class Schema {
 
   /**
    * @param string[] $path
-   * @return ZodError[]
+   * @return ValidatorError[]
    */
   protected function validateRules(mixed $value, array $path = []): array {
     $errors = [];
 
     foreach ($this->rules as $rule) {
       if ($rule->validate($value) === false) {
-        $errors[] = new ZodError($path, $rule->resolveMessage($value), $rule->code);
+        $errors[] = new ValidatorError($path, $rule->resolveMessage($value), $rule->code);
       }
     }
 
@@ -104,7 +104,7 @@ abstract class Schema {
     $result = $this->safeParse($value);
 
     if (!$result->success) {
-      throw new ZodException($result->errors);
+      throw new ValidatorException($result->errors);
     }
 
     return $result->data;

@@ -1,10 +1,10 @@
 <?php
 
-namespace Zod\Schemas\Complex;
+namespace Esliph\Schemas\Complex;
 
-use Zod\Schemas\Schema;
-use Zod\Results\ParseResult;
-use Zod\Errors\ZodError;
+use Esliph\Schemas\Schema;
+use Esliph\Results\ParseResult;
+use Esliph\Errors\ValidatorError;
 
 final class ObjectSchema extends Schema {
 
@@ -36,14 +36,14 @@ final class ObjectSchema extends Schema {
   protected function parseType(mixed $value, array $path = []): ParseResult {
     if ($this->coerce && is_array($value)) {
       if (!$this->isAssociativeArray($value)) {
-        return ParseResult::fail([new ZodError($path, 'Expected object or associative array, received indexed array', 'invalid_type')]);
+        return ParseResult::fail([new ValidatorError($path, 'Expected object or associative array, received indexed array', 'invalid_type')]);
       }
 
       return ParseResult::ok((object) $value);
     }
 
     if (!is_object($value)) {
-      return ParseResult::fail([new ZodError($path, 'Expected object, received ' . gettype($value), 'invalid_type')]);
+      return ParseResult::fail([new ValidatorError($path, 'Expected object, received ' . gettype($value), 'invalid_type')]);
     }
 
     return ParseResult::ok($value);
@@ -70,10 +70,10 @@ final class ObjectSchema extends Schema {
       foreach ($value as $key => $val) {
         if (!isset($this->shape[$key])) {
           $fieldPath = array_merge($path, [$key]);
-          $errors[] = new ZodError($fieldPath, 'Unrecognized key in object', 'unrecognized_keys');
+          $errors[] = new ValidatorError($fieldPath, 'Unrecognized key in object', 'unrecognized_keys');
         }
       }
-    } elseif ($this->catchall !== null) {
+    } else if ($this->catchall !== null) {
       foreach ($value as $key => $val) {
         if (!isset($this->shape[$key])) {
           $fieldPath = array_merge($path, [$key]);

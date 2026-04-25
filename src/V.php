@@ -1,17 +1,15 @@
 <?php
 
-declare(strict_types=1);
+namespace Esliph;
 
-namespace Zod;
+use Esliph\Schemas\Primitive\StringSchema;
+use Esliph\Schemas\Primitive\NumberSchema;
+use Esliph\Schemas\Complex\ObjectSchema;
+use Esliph\Schemas\Complex\ArraySchema;
+use Esliph\Schemas\Primitive\BooleanSchema;
+use Esliph\Schemas\Schema;
 
-use Zod\Schemas\Primitive\StringSchema;
-use Zod\Schemas\Primitive\NumberSchema;
-use Zod\Schemas\Complex\ObjectSchema;
-use Zod\Schemas\Complex\ArraySchema;
-use Zod\Schemas\Primitive\BooleanSchema;
-use Zod\Schemas\Schema;
-
-final class Z {
+final class V {
 
   public static function number(): NumberSchema {
     return new NumberSchema();

@@ -1,8 +1,8 @@
 <?php
 
-namespace Zod\Errors;
+namespace Esliph\Errors;
 
-readonly final class ZodError {
+readonly final class ValidatorError {
 
   public function __construct(
     public array $path,

@@ -1,12 +1,12 @@
 <?php
 
-namespace Zod\Schemas\Complex;
+namespace Esliph\Schemas\Complex;
 
 use Closure;
-use Zod\Schemas\Schema;
-use Zod\Results\ParseResult;
-use Zod\Errors\ZodError;
-use Zod\Validation\Rule;
+use Esliph\Schemas\Schema;
+use Esliph\Results\ParseResult;
+use Esliph\Errors\ValidatorError;
+use Esliph\Validation\Rule;
 
 final class ArraySchema extends Schema {
 
@@ -34,16 +34,15 @@ final class ArraySchema extends Schema {
           return ParseResult::ok($decoded);
         }
       } catch (\Exception) {
-        // Continue with default validation
       }
     }
 
     if (!is_array($value)) {
-      return ParseResult::fail([new ZodError($path, 'Expected array, received ' . gettype($value), 'invalid_type')]);
+      return ParseResult::fail([new ValidatorError($path, 'Expected array, received ' . gettype($value), 'invalid_type')]);
     }
 
     if ($this->isAssociativeArray($value)) {
-      return ParseResult::fail([new ZodError($path, 'Expected indexed array, received object', 'invalid_type')]);
+      return ParseResult::fail([new ValidatorError($path, 'Expected indexed array, received object', 'invalid_type')]);
     }
 
     return ParseResult::ok($value);

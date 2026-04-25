@@ -1,13 +1,13 @@
 <?php
 
-namespace Zod\Errors;
+namespace Esliph\Errors;
 
 use RuntimeException;
 
-final class ZodException extends RuntimeException {
+final class ValidatorException extends RuntimeException {
 
   /**
-   * @param ZodError[] $errors
+   * @param ValidatorError[] $errors
    */
   public function __construct(
     private array $errors = []
@@ -16,13 +16,13 @@ final class ZodException extends RuntimeException {
   }
 
   /**
-   * @return ZodError[]
+   * @return ValidatorError[]
    */
   public function getErrors(): array {
     return $this->errors;
   }
 
-  public function getFirstError(): ?ZodError {
+  public function getFirstError(): ?ValidatorError {
     return $this->errors[0] ?? null;
   }
 
@@ -35,7 +35,7 @@ final class ZodException extends RuntimeException {
 
     foreach ($grouped as $path => $errors) {
       $result[$path] = array_map(
-        static fn(ZodError $e): string => $e->message,
+        static fn(ValidatorError $e): string => $e->message,
         $errors
       );
     }
@@ -64,7 +64,7 @@ final class ZodException extends RuntimeException {
   }
 
   /**
-   * @return ZodError[]
+   * @return ValidatorError[]
    */
   public function getErrorsAt(string $path): array {
     $grouped = $this->getErrorsByPath();
@@ -77,7 +77,7 @@ final class ZodException extends RuntimeException {
    */
   public function toArray(): array {
     return array_map(
-      static fn(ZodError $e): array => [
+      static fn(ValidatorError $e): array => [
         'path' => $e->path,
         'message' => $e->message,
         'code' => $e->code,
@@ -91,7 +91,7 @@ final class ZodException extends RuntimeException {
   }
 
   /**
-   * @return array<string, ZodError[]>
+   * @return array<string, ValidatorError[]>
    */
   public function getErrorsByPath(): array {
     $grouped = [];
@@ -111,7 +111,7 @@ final class ZodException extends RuntimeException {
 
   private function buildMessage(): string {
     $lines = array_map(
-      static fn(ZodError $e): string => '[' . ($e->pathString() ?: '(root)') . "] {$e->message} (code: {$e->code})",
+      static fn(ValidatorError $e): string => '[' . ($e->pathString() ?: '(root)') . "] {$e->message} (code: {$e->code})",
       $this->errors
     );
 

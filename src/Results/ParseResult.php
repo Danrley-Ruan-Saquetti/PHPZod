@@ -1,13 +1,13 @@
 <?php
 
-namespace Zod\Results;
+namespace Esliph\Results;
 
-use Zod\Errors\ZodError;
+use Esliph\Errors\ValidatorError;
 
 readonly final class ParseResult {
 
   /**
-   * @param ZodError[] $errors
+   * @param ValidatorError[] $errors
    */
   private function __construct(
     public bool $success,
@@ -21,7 +21,7 @@ readonly final class ParseResult {
   }
 
   /**
-   * @param ZodError[] $errors
+   * @param ValidatorError[] $errors
    */
   public static function fail(array $errors): self {
     return new self(false, null, $errors);

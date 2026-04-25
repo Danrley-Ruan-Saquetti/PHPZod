@@ -1,18 +1,18 @@
 <?php
 
-namespace Zod\Schemas\Primitive;
+namespace Esliph\Schemas\Primitive;
 
-use Zod\Schemas\Schema;
-use Zod\Results\ParseResult;
-use Zod\Errors\ZodError;
-use Zod\Validation\Rule;
+use Esliph\Schemas\Schema;
+use Esliph\Results\ParseResult;
+use Esliph\Errors\ValidatorError;
+use Esliph\Validation\Rule;
 use Closure;
 
 final class StringSchema extends Schema {
 
   protected function parseType(mixed $value, array $path = []): ParseResult {
     if (!is_string($value)) {
-      return ParseResult::fail([new ZodError($path, 'Expected string, received ' . gettype($value), 'invalid_type')]);
+      return ParseResult::fail([new ValidatorError($path, 'Expected string, received ' . gettype($value), 'invalid_type')]);
     }
 
     return ParseResult::ok($value);

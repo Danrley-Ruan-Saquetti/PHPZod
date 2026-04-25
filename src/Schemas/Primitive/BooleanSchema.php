@@ -1,10 +1,10 @@
 <?php
 
-namespace Zod\Schemas\Primitive;
+namespace Esliph\Schemas\Primitive;
 
-use Zod\Schemas\Schema;
-use Zod\Results\ParseResult;
-use Zod\Errors\ZodError;
+use Esliph\Schemas\Schema;
+use Esliph\Results\ParseResult;
+use Esliph\Errors\ValidatorError;
 
 final class BooleanSchema extends Schema {
 
@@ -16,7 +16,7 @@ final class BooleanSchema extends Schema {
     }
 
     if (!is_bool($value)) {
-      return ParseResult::fail([new ZodError($path, 'Expected boolean, received ' . gettype($value), 'invalid_type')]);
+      return ParseResult::fail([new ValidatorError($path, 'Expected boolean, received ' . gettype($value), 'invalid_type')]);
     }
 
     return ParseResult::ok($value);
