@@ -2,15 +2,14 @@
 
 namespace Esliph\Schemas\Complex;
 
-use Closure;
 use Esliph\Schemas\Schema;
 use Esliph\Results\ParseResult;
 use Esliph\Errors\ValidatorError;
+use Esliph\Schemas\CoercibleSchema;
 use Esliph\Validation\Rule;
+use Closure;
 
-final class ArraySchema extends Schema {
-
-  protected bool $coerce = false;
+final class ArraySchema extends CoercibleSchema {
 
   public function __construct(
     protected ?Schema $elementSchema = null
@@ -118,12 +117,5 @@ final class ArraySchema extends Schema {
       static fn(array $value): bool => count($value) > 0,
       $message ?? 'Array must not be empty'
     ));
-  }
-
-  public function coerce(): static {
-    $clone = clone $this;
-    $clone->coerce = true;
-
-    return $clone;
   }
 }

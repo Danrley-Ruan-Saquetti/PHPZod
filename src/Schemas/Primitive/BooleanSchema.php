@@ -2,13 +2,11 @@
 
 namespace Esliph\Schemas\Primitive;
 
-use Esliph\Schemas\Schema;
 use Esliph\Results\ParseResult;
 use Esliph\Errors\ValidatorError;
+use Esliph\Schemas\CoercibleSchema;
 
-final class BooleanSchema extends Schema {
-
-  protected bool $coerce = false;
+final class BooleanSchema extends CoercibleSchema {
 
   protected function parseType(mixed $value, array $path = []): ParseResult {
     if (is_bool($value)) {
@@ -50,12 +48,5 @@ final class BooleanSchema extends Schema {
     }
 
     return (bool) $value;
-  }
-
-  public function coerce(): static {
-    $clone = clone $this;
-    $clone->coerce = true;
-
-    return $clone;
   }
 }

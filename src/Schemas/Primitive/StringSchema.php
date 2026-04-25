@@ -2,15 +2,13 @@
 
 namespace Esliph\Schemas\Primitive;
 
-use Esliph\Schemas\Schema;
+use Esliph\Schemas\CoercibleSchema;
 use Esliph\Results\ParseResult;
 use Esliph\Errors\ValidatorError;
 use Esliph\Validation\Rule;
 use Closure;
 
-final class StringSchema extends Schema {
-
-  protected bool $coerce = false;
+final class StringSchema extends CoercibleSchema {
 
   protected function parseType(mixed $value, array $path = []): ParseResult {
     if (is_string($value)) {
@@ -22,13 +20,6 @@ final class StringSchema extends Schema {
     }
 
     return ParseResult::ok((string) $value);
-  }
-
-  public function coerce(): static {
-    $clone = clone $this;
-    $clone->coerce = true;
-
-    return $clone;
   }
 
   public function min(int $length, string|Closure|null $message = null): static {

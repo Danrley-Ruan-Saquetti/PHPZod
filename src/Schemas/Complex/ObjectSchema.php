@@ -5,10 +5,10 @@ namespace Esliph\Schemas\Complex;
 use Esliph\Schemas\Schema;
 use Esliph\Results\ParseResult;
 use Esliph\Errors\ValidatorError;
+use Esliph\Schemas\CoercibleSchema;
 
-final class ObjectSchema extends Schema {
+final class ObjectSchema extends CoercibleSchema {
 
-  protected bool $coerce = false;
   protected bool $strict = false;
   protected ?Schema $catchall = null;
 
@@ -209,13 +209,6 @@ final class ObjectSchema extends Schema {
   public function catchall(Schema $schema): static {
     $clone = clone $this;
     $clone->catchall = $schema;
-
-    return $clone;
-  }
-
-  public function coerce(): static {
-    $clone = clone $this;
-    $clone->coerce = true;
 
     return $clone;
   }

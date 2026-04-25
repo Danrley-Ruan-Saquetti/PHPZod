@@ -2,15 +2,14 @@
 
 namespace Esliph\Schemas\Primitive;
 
-use Esliph\Schemas\Schema;
+use Esliph\Schemas\CoercibleSchema;
 use Esliph\Results\ParseResult;
 use Esliph\Errors\ValidatorError;
 use Esliph\Validation\Rule;
 use Closure;
 
-final class NumberSchema extends Schema {
+final class NumberSchema extends CoercibleSchema {
 
-  protected bool $coerce = false;
   protected bool $integer = false;
 
   protected function parseType(mixed $value, array $path = []): ParseResult {
@@ -27,13 +26,6 @@ final class NumberSchema extends Schema {
     }
 
     return ParseResult::ok($value);
-  }
-
-  public function coerce(): static {
-    $clone = clone $this;
-    $clone->coerce = true;
-
-    return $clone;
   }
 
   public function int(): static {
