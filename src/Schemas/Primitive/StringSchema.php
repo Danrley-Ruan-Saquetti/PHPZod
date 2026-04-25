@@ -10,12 +10,25 @@ use Closure;
 
 final class StringSchema extends Schema {
 
+  protected bool $coerce = false;
+
   protected function parseType(mixed $value, array $path = []): ParseResult {
-    if (!is_string($value)) {
+    if (is_string($value)) {
+      return ParseResult::ok($value);
+    }
+
+    if (!$this->coerce) {
       return ParseResult::fail([new ValidatorError($path, 'Expected string, received ' . gettype($value), 'invalid_type')]);
     }
 
-    return ParseResult::ok($value);
+    return ParseResult::ok((string) $value);
+  }
+
+  public function coerce(): static {
+    $clone = clone $this;
+    $clone->coerce = true;
+
+    return $clone;
   }
 
   public function min(int $length, string|Closure|null $message = null): static {
