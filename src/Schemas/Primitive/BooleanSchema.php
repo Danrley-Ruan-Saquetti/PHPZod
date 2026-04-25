@@ -11,15 +11,15 @@ final class BooleanSchema extends Schema {
   protected bool $coerce = false;
 
   protected function parseType(mixed $value, array $path = []): ParseResult {
-    if ($this->coerce) {
-      $value = $this->coerceToBoolean($value);
+    if (is_bool($value)) {
+      return ParseResult::ok($value);
     }
 
-    if (!is_bool($value)) {
+    if (!$this->coerce) {
       return ParseResult::fail([new ValidatorError($path, 'Expected boolean, received ' . gettype($value), 'invalid_type')]);
     }
 
-    return ParseResult::ok($value);
+    return ParseResult::ok($this->coerceToBoolean($value));
   }
 
   private function coerceToBoolean(mixed $value): bool {
