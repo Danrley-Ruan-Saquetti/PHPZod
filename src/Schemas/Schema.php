@@ -110,6 +110,10 @@ abstract class Schema {
     return $result->data;
   }
 
+  public function isValid(mixed $value): bool {
+    return $this->safeParse($value)->success;
+  }
+
   public function safeParse(mixed $value): ParseResult {
     return $this->_parse($value, []);
   }
