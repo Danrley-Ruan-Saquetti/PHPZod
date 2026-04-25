@@ -7,6 +7,7 @@ use Esliph\Schemas\Primitive\NumberSchema;
 use Esliph\Schemas\Complex\ObjectSchema;
 use Esliph\Schemas\Complex\ArraySchema;
 use Esliph\Schemas\Primitive\BooleanSchema;
+use Esliph\Schemas\Primitive\DateSchema;
 use Esliph\Schemas\Schema;
 
 final class V {
@@ -21,6 +22,10 @@ final class V {
 
   public static function boolean(): BooleanSchema {
     return new BooleanSchema();
+  }
+
+  public static function date(): DateSchema {
+    return new DateSchema();
   }
 
   /**
