@@ -6,6 +6,7 @@ use Esliph\Schemas\Primitive\StringSchema;
 use Esliph\Schemas\Primitive\NumberSchema;
 use Esliph\Schemas\Complex\ObjectSchema;
 use Esliph\Schemas\Complex\ArraySchema;
+use Esliph\Schemas\MixedSchema;
 use Esliph\Schemas\Primitive\BooleanSchema;
 use Esliph\Schemas\Primitive\DateSchema;
 use Esliph\Schemas\Schema;
@@ -40,5 +41,9 @@ final class V {
    */
   public static function _array(?Schema $schema = null): ArraySchema {
     return new ArraySchema($schema);
+  }
+
+  public static function mixed(): MixedSchema {
+    return new MixedSchema();
   }
 }
