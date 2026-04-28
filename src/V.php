@@ -6,6 +6,7 @@ use Esliph\Validator\Schemas\Primitive\StringSchema;
 use Esliph\Validator\Schemas\Primitive\NumberSchema;
 use Esliph\Validator\Schemas\Complex\ObjectSchema;
 use Esliph\Validator\Schemas\Complex\ArraySchema;
+use Esliph\Validator\Schemas\Complex\UnionSchema;
 use Esliph\Validator\Schemas\MixedSchema;
 use Esliph\Validator\Schemas\Primitive\BooleanSchema;
 use Esliph\Validator\Schemas\Primitive\DateSchema;
@@ -29,6 +30,10 @@ final class V {
     return new DateSchema();
   }
 
+  public static function mixed(): MixedSchema {
+    return new MixedSchema();
+  }
+
   /**
    * @param array<string, Schema> $shape
    */
@@ -43,7 +48,7 @@ final class V {
     return new ArraySchema($schema);
   }
 
-  public static function mixed(): MixedSchema {
-    return new MixedSchema();
+  public static function union(Schema ...$schemas): UnionSchema {
+    return new UnionSchema($schemas);
   }
 }
