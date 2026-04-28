@@ -3,7 +3,7 @@
 namespace Esliph\Validator\Schemas;
 
 use Esliph\Validator\Results\ParseResult;
-use Esliph\Validator\Errors\ValidatorError;
+use Esliph\Validator\Errors\Issue;
 use Esliph\Validator\Errors\ValidatorException;
 use Esliph\Validator\Validation\Rule;
 use Closure;
@@ -41,7 +41,7 @@ abstract class Schema {
       } else if ($this->isOptional) {
         return ParseResult::ok();
       } else {
-        return ParseResult::fail([new ValidatorError($path, 'Value is required', 'required')]);
+        return ParseResult::fail([new Issue($path, 'Value is required', 'required')]);
       }
     }
 
@@ -61,10 +61,10 @@ abstract class Schema {
 
     $value = $typeResult->data;
 
-    $errors = $this->validateRules($value, $path);
+    $issues = $this->validateRules($value, $path);
 
-    if (!empty($errors)) {
-      return ParseResult::fail($errors);
+    if (!empty($issues)) {
+      return ParseResult::fail($issues);
     }
 
     $value = $this->applyTransforms($value);
@@ -86,25 +86,25 @@ abstract class Schema {
 
   /**
    * @param string[] $path
-   * @return ValidatorError[]
+   * @return Issue[]
    */
   protected function validateRules(mixed $value, array $path = []): array {
-    $errors = [];
+    $issues = [];
 
     foreach ($this->rules as $rule) {
       if ($rule->validate($value) === false) {
-        $errors[] = new ValidatorError($path, $rule->resolveMessage($value), $rule->code);
+        $issues[] = new Issue($path, $rule->resolveMessage($value), $rule->code);
       }
     }
 
-    return $errors;
+    return $issues;
   }
 
   public function parse(mixed $value): mixed {
     $result = $this->safeParse($value);
 
     if (!$result->success) {
-      throw new ValidatorException($result->errors);
+      throw new ValidatorException($result->issues);
     }
 
     return $result->data;

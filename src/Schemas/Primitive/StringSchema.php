@@ -4,7 +4,7 @@ namespace Esliph\Validator\Schemas\Primitive;
 
 use Esliph\Validator\Schemas\CoercibleSchema;
 use Esliph\Validator\Results\ParseResult;
-use Esliph\Validator\Errors\ValidatorError;
+use Esliph\Validator\Errors\Issue;
 use Esliph\Validator\Validation\Rule;
 use Closure;
 
@@ -16,7 +16,7 @@ final class StringSchema extends CoercibleSchema {
     }
 
     if (!$this->coerce) {
-      return ParseResult::fail([new ValidatorError($path, 'Expected string, received ' . gettype($value), 'invalid_type')]);
+      return ParseResult::fail([new Issue($path, 'Expected string, received ' . gettype($value), 'invalid_type')]);
     }
 
     return ParseResult::ok((string) $value);

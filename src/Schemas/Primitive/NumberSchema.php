@@ -4,7 +4,7 @@ namespace Esliph\Validator\Schemas\Primitive;
 
 use Esliph\Validator\Schemas\CoercibleSchema;
 use Esliph\Validator\Results\ParseResult;
-use Esliph\Validator\Errors\ValidatorError;
+use Esliph\Validator\Errors\Issue;
 use Esliph\Validator\Validation\Rule;
 use Closure;
 
@@ -19,10 +19,10 @@ final class NumberSchema extends CoercibleSchema {
 
     if ($this->integer) {
       if (!is_int($value)) {
-        return ParseResult::fail([new ValidatorError($path, 'Expected integer, received ' . gettype($value), 'invalid_type')]);
+        return ParseResult::fail([new Issue($path, 'Expected integer, received ' . gettype($value), 'invalid_type')]);
       }
     } else if (!is_int($value) && !is_float($value)) {
-      return ParseResult::fail([new ValidatorError($path, 'Expected number, received ' . gettype($value), 'invalid_type')]);
+      return ParseResult::fail([new Issue($path, 'Expected number, received ' . gettype($value), 'invalid_type')]);
     }
 
     return ParseResult::ok($value);

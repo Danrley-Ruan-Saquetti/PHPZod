@@ -7,36 +7,36 @@ use RuntimeException;
 final class ValidatorException extends RuntimeException {
 
   /**
-   * @param ValidatorError[] $errors
+   * @param Issue[] $issues
    */
   public function __construct(
-    private array $errors = []
+    private readonly array $issues = []
   ) {
     parent::__construct($this->buildMessage(), 0, null);
   }
 
   /**
-   * @return ValidatorError[]
+   * @return Issue[]
    */
-  public function getErrors(): array {
-    return $this->errors;
+  public function getIssues(): array {
+    return $this->issues;
   }
 
-  public function getFirstError(): ?ValidatorError {
-    return $this->errors[0] ?? null;
+  public function getFirstIssue(): ?Issue {
+    return $this->issues[0] ?? null;
   }
 
   /**
    * @return array<string, string[]>
    */
   public function getMessagesByPath(): array {
-    $grouped = $this->getErrorsByPath();
+    $grouped = $this->getIssuesByPath();
     $result = [];
 
-    foreach ($grouped as $path => $errors) {
+    foreach ($grouped as $path => $issues) {
       $result[$path] = array_map(
-        static fn(ValidatorError $e): string => $e->message,
-        $errors
+        static fn(Issue $e): string => $e->message,
+        $issues
       );
     }
 
@@ -47,27 +47,27 @@ final class ValidatorException extends RuntimeException {
    * @return array<string, string>
    */
   public function getFlatMessages(): array {
-    $grouped = $this->getErrorsByPath();
+    $grouped = $this->getIssuesByPath();
     $result = [];
 
-    foreach ($grouped as $path => $errors) {
-      $result[$path] = $errors[0]->message;
+    foreach ($grouped as $path => $issues) {
+      $result[$path] = $issues[0]->message;
     }
 
     return $result;
   }
 
-  public function hasErrorAt(string $path): bool {
-    $grouped = $this->getErrorsByPath();
+  public function hasIssueAt(string $path): bool {
+    $grouped = $this->getIssuesByPath();
 
     return isset($grouped[$path]);
   }
 
   /**
-   * @return ValidatorError[]
+   * @return Issue[]
    */
-  public function getErrorsAt(string $path): array {
-    $grouped = $this->getErrorsByPath();
+  public function getIssuesAt(string $path): array {
+    $grouped = $this->getIssuesByPath();
 
     return $grouped[$path] ?? [];
   }
@@ -77,12 +77,12 @@ final class ValidatorException extends RuntimeException {
    */
   public function toArray(): array {
     return array_map(
-      static fn(ValidatorError $e): array => [
+      static fn(Issue $e): array => [
         'path' => $e->path,
         'message' => $e->message,
         'code' => $e->code,
       ],
-      $this->errors
+      $this->issues
     );
   }
 
@@ -91,19 +91,19 @@ final class ValidatorException extends RuntimeException {
   }
 
   /**
-   * @return array<string, ValidatorError[]>
+   * @return array<string, Issue[]>
    */
-  public function getErrorsByPath(): array {
+  public function getIssuesByPath(): array {
     $grouped = [];
 
-    foreach ($this->errors as $error) {
-      $key = $error->pathString();
+    foreach ($this->issues as $issue) {
+      $key = $issue->pathString();
 
       if (!isset($grouped[$key])) {
         $grouped[$key] = [];
       }
 
-      $grouped[$key][] = $error;
+      $grouped[$key][] = $issue;
     }
 
     return $grouped;
@@ -111,8 +111,8 @@ final class ValidatorException extends RuntimeException {
 
   private function buildMessage(): string {
     $lines = array_map(
-      static fn(ValidatorError $e): string => '[' . ($e->pathString() ?: '(root)') . "] {$e->message} (code: {$e->code})",
-      $this->errors
+      static fn(Issue $e): string => '[' . ($e->pathString() ?: '(root)') . "] {$e->message} (code: {$e->code})",
+      $this->issues
     );
 
     return 'Validation failed: ' . implode(' | ', $lines);

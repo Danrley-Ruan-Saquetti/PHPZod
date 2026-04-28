@@ -4,7 +4,7 @@ namespace Esliph\Validator\Schemas\Primitive;
 
 use Esliph\Validator\Schemas\CoercibleSchema;
 use Esliph\Validator\Results\ParseResult;
-use Esliph\Validator\Errors\ValidatorError;
+use Esliph\Validator\Errors\Issue;
 use Esliph\Validator\Validation\Rule;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -23,7 +23,7 @@ final class DateSchema extends CoercibleSchema {
     }
 
     if (!$this->coerce) {
-      return ParseResult::fail([new ValidatorError($path, 'Expected DateTimeImmutable, received ' . gettype($value), 'invalid_type')]);
+      return ParseResult::fail([new Issue($path, 'Expected DateTimeImmutable, received ' . gettype($value), 'invalid_type')]);
     }
 
     if (is_int($value)) {
@@ -31,7 +31,7 @@ final class DateSchema extends CoercibleSchema {
     }
 
     if (!is_string($value)) {
-      return ParseResult::fail([new ValidatorError($path, 'Expected DateTimeImmutable, received ' . gettype($value), 'invalid_type')]);
+      return ParseResult::fail([new Issue($path, 'Expected DateTimeImmutable, received ' . gettype($value), 'invalid_type')]);
     }
 
     try {
@@ -39,7 +39,7 @@ final class DateSchema extends CoercibleSchema {
         $date = DateTimeImmutable::createFromFormat($this->format, $value, $this->timezone);
 
         if ($date === false) {
-          return ParseResult::fail([new ValidatorError($path, 'Invalid date string', 'invalid_date')]);
+          return ParseResult::fail([new Issue($path, 'Invalid date string', 'invalid_date')]);
         }
 
         return ParseResult::ok($date);
@@ -47,7 +47,7 @@ final class DateSchema extends CoercibleSchema {
 
       return ParseResult::ok(new DateTimeImmutable($value, $this->timezone));
     } catch (Exception) {
-      return ParseResult::fail([new ValidatorError($path, 'Invalid date string', 'invalid_date')]);
+      return ParseResult::fail([new Issue($path, 'Invalid date string', 'invalid_date')]);
     }
   }
 

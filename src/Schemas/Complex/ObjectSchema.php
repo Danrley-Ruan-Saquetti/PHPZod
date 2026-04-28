@@ -4,7 +4,7 @@ namespace Esliph\Validator\Schemas\Complex;
 
 use Esliph\Validator\Schemas\Schema;
 use Esliph\Validator\Results\ParseResult;
-use Esliph\Validator\Errors\ValidatorError;
+use Esliph\Validator\Errors\Issue;
 use Esliph\Validator\Schemas\CoercibleSchema;
 
 final class ObjectSchema extends CoercibleSchema {
@@ -36,14 +36,14 @@ final class ObjectSchema extends CoercibleSchema {
   protected function parseType(mixed $value, array $path = []): ParseResult {
     if ($this->coerce && is_array($value)) {
       if (!$this->isAssociativeArray($value)) {
-        return ParseResult::fail([new ValidatorError($path, 'Expected object or associative array, received indexed array', 'invalid_type')]);
+        return ParseResult::fail([new Issue($path, 'Expected object or associative array, received indexed array', 'invalid_type')]);
       }
 
       return ParseResult::ok((object) $value);
     }
 
     if (!is_object($value)) {
-      return ParseResult::fail([new ValidatorError($path, 'Expected object, received ' . gettype($value), 'invalid_type')]);
+      return ParseResult::fail([new Issue($path, 'Expected object, received ' . gettype($value), 'invalid_type')]);
     }
 
     return ParseResult::ok($value);
@@ -51,7 +51,7 @@ final class ObjectSchema extends CoercibleSchema {
 
   protected function validateType(mixed $value, array $path = []): ParseResult {
     $parsedValue = new \stdClass();
-    $errors = [];
+    $issues = [];
 
     foreach ($this->shape as $key => $schema) {
       $fieldPath = array_merge($path, [$key]);
@@ -60,7 +60,7 @@ final class ObjectSchema extends CoercibleSchema {
       $result = $schema->_parse($fieldValue, $fieldPath);
 
       if (!$result->success) {
-        $errors = array_merge($errors, $result->errors);
+        $issues = array_merge($issues, $result->issues);
       } else {
         $parsedValue->$key = $result->data;
       }
@@ -70,7 +70,7 @@ final class ObjectSchema extends CoercibleSchema {
       foreach ($value as $key => $val) {
         if (!isset($this->shape[$key])) {
           $fieldPath = array_merge($path, [$key]);
-          $errors[] = new ValidatorError($fieldPath, 'Unrecognized key in object', 'unrecognized_keys');
+          $issues[] = new Issue($fieldPath, 'Unrecognized key in object', 'unrecognized_keys');
         }
       }
     } else if ($this->catchall !== null) {
@@ -80,7 +80,7 @@ final class ObjectSchema extends CoercibleSchema {
           $result = $this->catchall->_parse($val, $fieldPath);
 
           if (!$result->success) {
-            $errors = array_merge($errors, $result->errors);
+            $issues = array_merge($issues, $result->issues);
           } else {
             $parsedValue->$key = $result->data;
           }
@@ -94,8 +94,8 @@ final class ObjectSchema extends CoercibleSchema {
       }
     }
 
-    if (!empty($errors)) {
-      return ParseResult::fail($errors);
+    if (!empty($issues)) {
+      return ParseResult::fail($issues);
     }
 
     return ParseResult::ok($parsedValue);

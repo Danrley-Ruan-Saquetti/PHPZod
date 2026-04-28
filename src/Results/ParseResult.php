@@ -2,17 +2,17 @@
 
 namespace Esliph\Validator\Results;
 
-use Esliph\Validator\Errors\ValidatorError;
+use Esliph\Validator\Errors\Issue;
 
 readonly final class ParseResult {
 
   /**
-   * @param ValidatorError[] $errors
+   * @param Issue[] $issues
    */
   private function __construct(
     public bool $success,
     public mixed $data = null,
-    public array $errors = []
+    public array $issues = []
   ) {
   }
 
@@ -21,9 +21,9 @@ readonly final class ParseResult {
   }
 
   /**
-   * @param ValidatorError[] $errors
+   * @param Issue[] $issues
    */
-  public static function fail(array $errors): self {
-    return new self(false, null, $errors);
+  public static function fail(array $issues): self {
+    return new self(false, null, $issues);
   }
 }

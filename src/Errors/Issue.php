@@ -2,7 +2,7 @@
 
 namespace Esliph\Validator\Errors;
 
-readonly final class ValidatorError {
+readonly final class Issue {
 
   public function __construct(
     public array $path,

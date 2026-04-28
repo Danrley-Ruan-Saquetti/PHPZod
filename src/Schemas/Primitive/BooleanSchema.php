@@ -3,7 +3,7 @@
 namespace Esliph\Validator\Schemas\Primitive;
 
 use Esliph\Validator\Results\ParseResult;
-use Esliph\Validator\Errors\ValidatorError;
+use Esliph\Validator\Errors\Issue;
 use Esliph\Validator\Schemas\CoercibleSchema;
 
 final class BooleanSchema extends CoercibleSchema {
@@ -14,7 +14,7 @@ final class BooleanSchema extends CoercibleSchema {
     }
 
     if (!$this->coerce) {
-      return ParseResult::fail([new ValidatorError($path, 'Expected boolean, received ' . gettype($value), 'invalid_type')]);
+      return ParseResult::fail([new Issue($path, 'Expected boolean, received ' . gettype($value), 'invalid_type')]);
     }
 
     return ParseResult::ok($this->coerceToBoolean($value));

@@ -4,7 +4,7 @@ namespace Esliph\Validator\Schemas\Complex;
 
 use Esliph\Validator\Schemas\Schema;
 use Esliph\Validator\Results\ParseResult;
-use Esliph\Validator\Errors\ValidatorError;
+use Esliph\Validator\Errors\Issue;
 use Esliph\Validator\Schemas\CoercibleSchema;
 use Esliph\Validator\Validation\Rule;
 use Closure;
@@ -37,11 +37,11 @@ final class ArraySchema extends CoercibleSchema {
     }
 
     if (!is_array($value)) {
-      return ParseResult::fail([new ValidatorError($path, 'Expected array, received ' . gettype($value), 'invalid_type')]);
+      return ParseResult::fail([new Issue($path, 'Expected array, received ' . gettype($value), 'invalid_type')]);
     }
 
     if ($this->isAssociativeArray($value)) {
-      return ParseResult::fail([new ValidatorError($path, 'Expected indexed array, received object', 'invalid_type')]);
+      return ParseResult::fail([new Issue($path, 'Expected indexed array, received object', 'invalid_type')]);
     }
 
     return ParseResult::ok($value);
@@ -49,7 +49,7 @@ final class ArraySchema extends CoercibleSchema {
 
   protected function validateType(mixed $value, array $path = []): ParseResult {
     $parsedValue = [];
-    $errors = [];
+    $issues = [];
 
     if ($this->elementSchema !== null) {
       foreach ($value as $index => $item) {
@@ -57,7 +57,7 @@ final class ArraySchema extends CoercibleSchema {
         $result = $this->elementSchema->_parse($item, $itemPath);
 
         if (!$result->success) {
-          $errors = array_merge($errors, $result->errors);
+          $issues = array_merge($issues, $result->issues);
         } else {
           $parsedValue[] = $result->data;
         }
@@ -66,8 +66,8 @@ final class ArraySchema extends CoercibleSchema {
       $parsedValue = $value;
     }
 
-    if (!empty($errors)) {
-      return ParseResult::fail($errors);
+    if (!empty($issues)) {
+      return ParseResult::fail($issues);
     }
 
     return ParseResult::ok($parsedValue);
