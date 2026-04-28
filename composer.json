@@ -1,9 +1,27 @@
 {
   "name": "esliph/validator",
+  "description": "Uma biblioteca de validação de dados inspirada no Zod para PHP",
   "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "validation",
+    "schema",
+    "validator"
+  ],
+  "authors": [
+    {
+      "name": "Dan Ruan",
+      "email": "danrsaquetti@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.2"
+  },
   "autoload": {
     "psr-4": {
-      "Esliph\\": "src/"
+      "Esliph\\Validator\\": "src/"
     }
-  }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
 }
