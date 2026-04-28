@@ -7,9 +7,9 @@ deps:
 .PHONY: deps
 
 cli:
-	@docker compose --profile cli run --rm zod bash
+	@docker compose --profile cli run --rm validator bash
 .PHONY: cli
 
-http:
-	@docker compose --profile http up --build -d
-.PHONY: http
+test:
+	@docker compose --profile test run --rm composer run test
+.PHONY: test

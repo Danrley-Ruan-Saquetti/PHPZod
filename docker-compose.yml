@@ -1,13 +1,12 @@
-name: pgroot
+name: esliph-validator
 
 services:
-  zod:
+  validator:
     build: .
-    container_name: zod
+    container_name: validator
     volumes:
       - .:/var/www
     profiles:
-      - http
       - cli
       - test
 
