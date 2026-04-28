@@ -1,6 +1,6 @@
 <?php
 
-namespace Esliph\Schemas;
+namespace Esliph\Validator\Schemas;
 
 abstract class CoercibleSchema extends Schema {
 

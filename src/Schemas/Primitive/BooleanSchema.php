@@ -1,10 +1,10 @@
 <?php
 
-namespace Esliph\Schemas\Primitive;
+namespace Esliph\Validator\Schemas\Primitive;
 
-use Esliph\Results\ParseResult;
-use Esliph\Errors\ValidatorError;
-use Esliph\Schemas\CoercibleSchema;
+use Esliph\Validator\Results\ParseResult;
+use Esliph\Validator\Errors\ValidatorError;
+use Esliph\Validator\Schemas\CoercibleSchema;
 
 final class BooleanSchema extends CoercibleSchema {
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace Esliph\Results;
+namespace Esliph\Validator\Results;
 
-use Esliph\Errors\ValidatorError;
+use Esliph\Validator\Errors\ValidatorError;
 
 readonly final class ParseResult {
 

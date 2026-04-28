@@ -1,6 +1,6 @@
 <?php
 
-namespace Esliph\Validation;
+namespace Esliph\Validator\Validation;
 
 use Closure;
 

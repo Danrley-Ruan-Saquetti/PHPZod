@@ -1,11 +1,11 @@
 <?php
 
-namespace Esliph\Schemas;
+namespace Esliph\Validator\Schemas;
 
-use Esliph\Results\ParseResult;
-use Esliph\Errors\ValidatorError;
-use Esliph\Errors\ValidatorException;
-use Esliph\Validation\Rule;
+use Esliph\Validator\Results\ParseResult;
+use Esliph\Validator\Errors\ValidatorError;
+use Esliph\Validator\Errors\ValidatorException;
+use Esliph\Validator\Validation\Rule;
 use Closure;
 
 abstract class Schema {

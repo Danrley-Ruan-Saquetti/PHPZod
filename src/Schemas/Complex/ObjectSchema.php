@@ -1,11 +1,11 @@
 <?php
 
-namespace Esliph\Schemas\Complex;
+namespace Esliph\Validator\Schemas\Complex;
 
-use Esliph\Schemas\Schema;
-use Esliph\Results\ParseResult;
-use Esliph\Errors\ValidatorError;
-use Esliph\Schemas\CoercibleSchema;
+use Esliph\Validator\Schemas\Schema;
+use Esliph\Validator\Results\ParseResult;
+use Esliph\Validator\Errors\ValidatorError;
+use Esliph\Validator\Schemas\CoercibleSchema;
 
 final class ObjectSchema extends CoercibleSchema {
 

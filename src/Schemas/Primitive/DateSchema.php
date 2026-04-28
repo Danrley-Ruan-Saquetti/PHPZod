@@ -1,11 +1,11 @@
 <?php
 
-namespace Esliph\Schemas\Primitive;
+namespace Esliph\Validator\Schemas\Primitive;
 
-use Esliph\Schemas\CoercibleSchema;
-use Esliph\Results\ParseResult;
-use Esliph\Errors\ValidatorError;
-use Esliph\Validation\Rule;
+use Esliph\Validator\Schemas\CoercibleSchema;
+use Esliph\Validator\Results\ParseResult;
+use Esliph\Validator\Errors\ValidatorError;
+use Esliph\Validator\Validation\Rule;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;

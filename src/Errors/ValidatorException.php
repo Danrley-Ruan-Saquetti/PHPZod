@@ -1,6 +1,6 @@
 <?php
 
-namespace Esliph\Errors;
+namespace Esliph\Validator\Errors;
 
 use RuntimeException;
 

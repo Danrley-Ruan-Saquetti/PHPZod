@@ -1,8 +1,8 @@
 <?php
 
-namespace Esliph\Schemas;
+namespace Esliph\Validator\Schemas;
 
-use Esliph\Results\ParseResult;
+use Esliph\Validator\Results\ParseResult;
 
 class MixedSchema extends Schema {
 
