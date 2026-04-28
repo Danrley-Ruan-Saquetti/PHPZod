@@ -14,6 +14,9 @@
       "email": "danrsaquetti@gmail.com"
     }
   ],
+  "scripts": {
+    "test": "vendor/bin/phpunit"
+  },
   "require": {
     "php": ">=8.2"
   },
@@ -22,6 +25,14 @@
       "Esliph\\Validator\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Esliph\\Validator\\Test\\": "tests/"
+    }
+  },
   "minimum-stability": "stable",
-  "prefer-stable": true
+  "prefer-stable": true,
+  "require-dev": {
+    "phpunit/phpunit": "^11.5"
+  }
 }
