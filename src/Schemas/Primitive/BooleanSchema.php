@@ -5,9 +5,11 @@ namespace Esliph\Validator\Schemas\Primitive;
 use Esliph\Validator\Results\ParseResult;
 use Esliph\Validator\Errors\Issue;
 use Esliph\Validator\Schemas\CoercibleSchema;
+use Override;
 
 final class BooleanSchema extends CoercibleSchema {
 
+  #[Override]
   protected function parseType(mixed $value, array $path = []): ParseResult {
     if (is_bool($value)) {
       return ParseResult::ok($value);

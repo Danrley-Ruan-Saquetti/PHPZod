@@ -11,12 +11,14 @@ use DateTimeInterface;
 use DateTimeZone;
 use Closure;
 use Exception;
+use Override;
 
 final class DateSchema extends CoercibleSchema {
 
   protected ?string $format = null;
   protected ?DateTimeZone $timezone = null;
 
+  #[Override]
   protected function parseType(mixed $value, array $path = []): ParseResult {
     if ($value instanceof DateTimeInterface) {
       return ParseResult::ok(DateTimeImmutable::createFromInterface($value));

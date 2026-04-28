@@ -6,6 +6,7 @@ use Esliph\Validator\Schemas\Schema;
 use Esliph\Validator\Results\ParseResult;
 use Esliph\Validator\Errors\Issue;
 use Esliph\Validator\Schemas\CoercibleSchema;
+use Override;
 
 final class ObjectSchema extends CoercibleSchema {
 
@@ -33,6 +34,7 @@ final class ObjectSchema extends CoercibleSchema {
     }
   }
 
+  #[Override]
   protected function parseType(mixed $value, array $path = []): ParseResult {
     if ($this->coerce && is_array($value)) {
       if (!$this->isAssociativeArray($value)) {

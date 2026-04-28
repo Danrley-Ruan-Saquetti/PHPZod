@@ -8,6 +8,7 @@ use Esliph\Validator\Errors\Issue;
 use Esliph\Validator\Schemas\CoercibleSchema;
 use Esliph\Validator\Validation\Rule;
 use Closure;
+use Override;
 
 final class ArraySchema extends CoercibleSchema {
 
@@ -24,6 +25,7 @@ final class ArraySchema extends CoercibleSchema {
     }
   }
 
+  #[Override]
   protected function parseType(mixed $value, array $path = []): ParseResult {
     if ($this->coerce && is_string($value)) {
       try {

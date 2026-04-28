@@ -7,9 +7,11 @@ use Esliph\Validator\Results\ParseResult;
 use Esliph\Validator\Errors\Issue;
 use Esliph\Validator\Validation\Rule;
 use Closure;
+use Override;
 
 final class StringSchema extends CoercibleSchema {
 
+  #[Override]
   protected function parseType(mixed $value, array $path = []): ParseResult {
     if (is_string($value)) {
       return ParseResult::ok($value);

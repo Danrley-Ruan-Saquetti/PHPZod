@@ -7,11 +7,13 @@ use Esliph\Validator\Results\ParseResult;
 use Esliph\Validator\Errors\Issue;
 use Esliph\Validator\Validation\Rule;
 use Closure;
+use Override;
 
 final class NumberSchema extends CoercibleSchema {
 
   protected bool $integer = false;
 
+  #[Override]
   protected function parseType(mixed $value, array $path = []): ParseResult {
     if ($this->coerce && is_numeric($value)) {
       $value = $this->integer ? (int) $value : (float) $value;
