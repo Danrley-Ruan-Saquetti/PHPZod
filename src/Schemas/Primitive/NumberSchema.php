@@ -47,41 +47,41 @@ final class NumberSchema extends CoercibleSchema {
 
   public function gt(int|float $min, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
-      'gt',
-      'too_small',
-      static fn(mixed $value, array $params): bool => $value > $params['min'],
-      $message ?? static fn(mixed $value, array $params): string => "Must be greater than {$params['min']}",
-      ['min' => $min]
+      name: 'gt',
+      code: 'too_small',
+      check: static fn(mixed $value, array $params): bool => $value > $params['min'],
+      message: $message ?? static fn(mixed $value, array $params): string => "Must be greater than {$params['min']}",
+      params: ['min' => $min]
     ));
   }
 
   public function gte(int|float $min, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
-      'gte',
-      'too_small',
-      static fn(mixed $value, array $params): bool => $value >= $params['min'],
-      $message ?? static fn(mixed $value, array $params): string => "Must be greater than or equal to {$params['min']}",
-      ['min' => $min]
+      name: 'gte',
+      code: 'too_small',
+      check: static fn(mixed $value, array $params): bool => $value >= $params['min'],
+      message: $message ?? static fn(mixed $value, array $params): string => "Must be greater than or equal to {$params['min']}",
+      params: ['min' => $min]
     ));
   }
 
   public function lt(int|float $max, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
-      'lt',
-      'too_big',
-      static fn(mixed $value, array $params): bool => $value < $params['max'],
-      $message ?? static fn(mixed $value, array $params): string => "Must be less than {$params['max']}",
-      ['max' => $max]
+      name: 'lt',
+      code: 'too_big',
+      check: static fn(mixed $value, array $params): bool => $value < $params['max'],
+      message: $message ?? static fn(mixed $value, array $params): string => "Must be less than {$params['max']}",
+      params: ['max' => $max]
     ));
   }
 
   public function lte(int|float $max, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
-      'lte',
-      'too_big',
-      static fn(mixed $value, array $params): bool => $value <= $params['max'],
-      $message ?? static fn(mixed $value, array $params): string => "Must be less than or equal to {$params['max']}",
-      ['max' => $max]
+      name: 'lte',
+      code: 'too_big',
+      check: static fn(mixed $value, array $params): bool => $value <= $params['max'],
+      message: $message ?? static fn(mixed $value, array $params): string => "Must be less than or equal to {$params['max']}",
+      params: ['max' => $max]
     ));
   }
 
@@ -103,21 +103,21 @@ final class NumberSchema extends CoercibleSchema {
 
   public function between(int|float $min, int|float $max, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
-      'between',
-      'out_of_range',
-      static fn(mixed $value, array $params): bool => $value >= $params['min'] && $value <= $params['max'],
-      $message ?? static fn(mixed $value, array $params): string => "Must be between {$params['min']} and {$params['max']}",
-      ['min' => $min, 'max' => $max]
+      name: 'between',
+      code: 'out_of_range',
+      check: static fn(mixed $value, array $params): bool => $value >= $params['min'] && $value <= $params['max'],
+      message: $message ?? static fn(mixed $value, array $params): string => "Must be between {$params['min']} and {$params['max']}",
+      params: ['min' => $min, 'max' => $max]
     ));
   }
 
   public function multipleOf(int|float $divisor, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
-      'multipleOf',
-      'not_multiple',
-      static fn(mixed $value, array $params): bool => fmod($value, $params['divisor']) === 0.0,
-      $message ?? static fn(mixed $value, array $params): string => "Must be a multiple of {$params['divisor']}",
-      ['divisor' => $divisor]
+      name: 'multipleOf',
+      code: 'not_multiple',
+      check: static fn(mixed $value, array $params): bool => fmod($value, $params['divisor']) === 0.0,
+      message: $message ?? static fn(mixed $value, array $params): string => "Must be a multiple of {$params['divisor']}",
+      params: ['divisor' => $divisor]
     ));
   }
 }

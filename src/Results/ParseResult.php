@@ -17,13 +17,19 @@ readonly final class ParseResult {
   }
 
   public static function ok(mixed $data = null): self {
-    return new self(true, $data);
+    return new self(
+      success: true,
+      data: $data
+    );
   }
 
   /**
    * @param Issue[] $issues
    */
   public static function fail(array $issues): self {
-    return new self(false, null, $issues);
+    return new self(
+      success: false,
+      issues: $issues
+    );
   }
 }

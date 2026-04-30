@@ -12,7 +12,7 @@ abstract class Schema {
 
   /** @var Rule[] */
   protected array $rules = [];
-  /** @var Closure[] */
+  /** @var Closure(mixed)[] */
   protected array $transforms = [];
   protected bool $isOptional = false;
   protected mixed $default = null;
@@ -41,7 +41,13 @@ abstract class Schema {
       } else if ($this->isOptional) {
         return ParseResult::ok();
       } else {
-        return ParseResult::fail([new Issue($path, 'Value is required', 'required')]);
+        return ParseResult::fail([
+          new Issue(
+            path: $path,
+            message: 'Value is required',
+            code: 'required'
+          )
+        ]);
       }
     }
 
@@ -124,10 +130,10 @@ abstract class Schema {
 
   public function refine(Closure $callable, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
-      'refinement',
-      'custom',
-      $callable,
-      $message ?? ''
+      name: 'refinement',
+      code: 'custom',
+      check: $callable,
+      message: $message ?? ''
     ));
   }
 

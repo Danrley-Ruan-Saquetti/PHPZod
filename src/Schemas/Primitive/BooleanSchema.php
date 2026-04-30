@@ -16,7 +16,13 @@ final class BooleanSchema extends CoercibleSchema {
     }
 
     if (!$this->coerce) {
-      return ParseResult::fail([new Issue($path, 'Expected boolean, received ' . gettype($value), 'invalid_type')]);
+      return ParseResult::fail([
+        new Issue(
+          path: $path,
+          message: 'Expected boolean, received ' . gettype($value),
+          code: 'invalid_type'
+        )
+      ]);
     }
 
     return ParseResult::ok($this->coerceToBoolean($value));

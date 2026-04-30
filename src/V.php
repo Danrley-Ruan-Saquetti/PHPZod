@@ -38,17 +38,17 @@ final class V {
    * @param array<string, Schema> $shape
    */
   public static function object(array $shape = []): ObjectSchema {
-    return new ObjectSchema($shape);
+    return new ObjectSchema(shape: $shape);
   }
 
   /**
    * @param Schema|null $schema
    */
   public static function _array(?Schema $schema = null): ArraySchema {
-    return new ArraySchema($schema);
+    return new ArraySchema(elementSchema: $schema);
   }
 
   public static function union(Schema ...$schemas): UnionSchema {
-    return new UnionSchema($schemas);
+    return new UnionSchema(schemas: $schemas);
   }
 }

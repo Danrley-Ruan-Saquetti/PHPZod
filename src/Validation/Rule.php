@@ -6,6 +6,10 @@ use Closure;
 
 readonly final class Rule {
 
+  /**
+   * @param Closure(mixed, array): string $check
+   * @param string|Closure(mixed, array): string|null $message
+   */
   public function __construct(
     public string $name,
     public string $code,

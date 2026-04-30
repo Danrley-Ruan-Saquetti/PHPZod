@@ -39,11 +39,23 @@ final class ArraySchema extends CoercibleSchema {
     }
 
     if (!is_array($value)) {
-      return ParseResult::fail([new Issue($path, 'Expected array, received ' . gettype($value), 'invalid_type')]);
+      return ParseResult::fail([
+        new Issue(
+          path: $path,
+          message: 'Expected array, received ' . gettype($value),
+          code: 'invalid_type'
+        )
+      ]);
     }
 
     if ($this->isAssociativeArray($value)) {
-      return ParseResult::fail([new Issue($path, 'Expected indexed array, received object', 'invalid_type')]);
+      return ParseResult::fail([
+        new Issue(
+          path: $path,
+          message: 'Expected indexed array, received object',
+          code: 'invalid_type'
+        )
+      ]);
     }
 
     return ParseResult::ok($value);
@@ -84,40 +96,40 @@ final class ArraySchema extends CoercibleSchema {
 
   public function length(int $length, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
-      'length',
-      'invalid_type',
-      static fn(array $value, array $params): bool => count($value) === $params['length'],
-      $message ?? static fn(array $value, array $params): string => "Array must have exactly {$params['length']} elements",
-      ['length' => $length]
+      name: 'length',
+      code: 'invalid_type',
+      check: static fn(array $value, array $params): bool => count($value) === $params['length'],
+      message: $message ?? static fn(array $value, array $params): string => "Array must have exactly {$params['length']} elements",
+      params: ['length' => $length]
     ));
   }
 
   public function min(int $length, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
-      'min',
-      'too_small',
-      static fn(array $value, array $params): bool => count($value) >= $params['length'],
-      $message ?? static fn(array $value, array $params): string => "Array must have at least {$params['length']} elements",
-      ['length' => $length]
+      name: 'min',
+      code: 'too_small',
+      check: static fn(array $value, array $params): bool => count($value) >= $params['length'],
+      message: $message ?? static fn(array $value, array $params): string => "Array must have at least {$params['length']} elements",
+      params: ['length' => $length]
     ));
   }
 
   public function max(int $length, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
-      'max',
-      'too_big',
-      static fn(array $value, array $params): bool => count($value) <= $params['length'],
-      $message ?? static fn(array $value, array $params): string => "Array must have at most {$params['length']} elements",
-      ['length' => $length]
+      name: 'max',
+      code: 'too_big',
+      check: static fn(array $value, array $params): bool => count($value) <= $params['length'],
+      message: $message ?? static fn(array $value, array $params): string => "Array must have at most {$params['length']} elements",
+      params: ['length' => $length]
     ));
   }
 
   public function nonempty(string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
-      'nonempty',
-      'too_small',
-      static fn(array $value): bool => count($value) > 0,
-      $message ?? 'Array must not be empty'
+      name: 'nonempty',
+      code: 'too_small',
+      check: static fn(array $value): bool => count($value) > 0,
+      message: $message ?? 'Array must not be empty'
     ));
   }
 }
