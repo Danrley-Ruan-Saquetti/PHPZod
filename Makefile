@@ -13,5 +13,5 @@ cli:
 .PHONY: cli
 
 test:
-	@docker compose --profile test run --rm composer run test $(ARGS)
+	@docker compose --profile test run --rm composer run test -- $(ARGS)
 .PHONY: test
