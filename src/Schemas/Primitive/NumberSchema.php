@@ -15,8 +15,14 @@ final class NumberSchema extends CoercibleSchema {
 
   #[Override]
   protected function parseType(mixed $value, array $path = []): ParseResult {
-    if ($this->coerce && is_numeric($value)) {
-      $value = $this->integer ? (int) $value : (float) $value;
+    if ($this->coerce && !is_int($value) && !is_float($value)) {
+      if (is_bool($value)) {
+        return ParseResult::ok((int) $value);
+      }
+
+      if (is_numeric($value)) {
+        $value = $this->integer ? (int) $value : (float) $value;
+      }
     }
 
     if ($this->integer) {
