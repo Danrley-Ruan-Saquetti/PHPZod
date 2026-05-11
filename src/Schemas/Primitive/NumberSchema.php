@@ -55,8 +55,8 @@ final class NumberSchema extends CoercibleSchema {
     return $this->addRule(new Rule(
       name: 'gt',
       code: 'too_small',
-      check: static fn(mixed $value, array $params): bool => $value > $params['min'],
-      message: $message ?? static fn(mixed $value, array $params): string => "Must be greater than {$params['min']}",
+      check: static fn(int|float $value, array $params): bool => $value > $params['min'],
+      message: $message ?? static fn(int|float $value, array $params): string => "Must be greater than {$params['min']}",
       params: ['min' => $min]
     ));
   }
@@ -65,8 +65,8 @@ final class NumberSchema extends CoercibleSchema {
     return $this->addRule(new Rule(
       name: 'gte',
       code: 'too_small',
-      check: static fn(mixed $value, array $params): bool => $value >= $params['min'],
-      message: $message ?? static fn(mixed $value, array $params): string => "Must be greater than or equal to {$params['min']}",
+      check: static fn(int|float $value, array $params): bool => $value >= $params['min'],
+      message: $message ?? static fn(int|float $value, array $params): string => "Must be greater than or equal to {$params['min']}",
       params: ['min' => $min]
     ));
   }
@@ -75,8 +75,8 @@ final class NumberSchema extends CoercibleSchema {
     return $this->addRule(new Rule(
       name: 'lt',
       code: 'too_big',
-      check: static fn(mixed $value, array $params): bool => $value < $params['max'],
-      message: $message ?? static fn(mixed $value, array $params): string => "Must be less than {$params['max']}",
+      check: static fn(int|float $value, array $params): bool => $value < $params['max'],
+      message: $message ?? static fn(int|float $value, array $params): string => "Must be less than {$params['max']}",
       params: ['max' => $max]
     ));
   }
@@ -85,8 +85,8 @@ final class NumberSchema extends CoercibleSchema {
     return $this->addRule(new Rule(
       name: 'lte',
       code: 'too_big',
-      check: static fn(mixed $value, array $params): bool => $value <= $params['max'],
-      message: $message ?? static fn(mixed $value, array $params): string => "Must be less than or equal to {$params['max']}",
+      check: static fn(int|float $value, array $params): bool => $value <= $params['max'],
+      message: $message ?? static fn(int|float $value, array $params): string => "Must be less than or equal to {$params['max']}",
       params: ['max' => $max]
     ));
   }
@@ -111,18 +111,18 @@ final class NumberSchema extends CoercibleSchema {
     return $this->addRule(new Rule(
       name: 'between',
       code: 'out_of_range',
-      check: static fn(mixed $value, array $params): bool => $value >= $params['min'] && $value <= $params['max'],
-      message: $message ?? static fn(mixed $value, array $params): string => "Must be between {$params['min']} and {$params['max']}",
+      check: static fn(int|float $value, array $params): bool => $value >= $params['min'] && $value <= $params['max'],
+      message: $message ?? static fn(int|float $value, array $params): string => "Must be between {$params['min']} and {$params['max']}",
       params: ['min' => $min, 'max' => $max]
     ));
   }
 
-  public function multipleOf(int|float $divisor, string|Closure|null $message = null): static {
+  public function multipleOf(int|float $divisor, int $precision = 0, string|Closure|null $message = null): static {
     return $this->addRule(new Rule(
       name: 'multipleOf',
       code: 'not_multiple',
-      check: static fn(mixed $value, array $params): bool => fmod($value, $params['divisor']) === 0.0,
-      message: $message ?? static fn(mixed $value, array $params): string => "Must be a multiple of {$params['divisor']}",
+      check: static fn(int|float $value, array $params): bool => fmod($value, $params['divisor']) === 0.0,
+      message: $message ?? static fn(int|float $value, array $params): string => "Must be a multiple of {$params['divisor']}",
       params: ['divisor' => $divisor]
     ));
   }

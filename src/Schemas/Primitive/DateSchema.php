@@ -105,8 +105,8 @@ final class DateSchema extends CoercibleSchema {
     return $this->addRule(new Rule(
       name: 'after',
       code: 'too_early',
-      check: static fn(mixed $value, array $params): bool => $value > $params['min'],
-      message: $message ?? static fn(mixed $value, array $params): string => "Must be after {$params['min']->format(DateTimeInterface::ATOM)}",
+      check: static fn(DateTimeImmutable $value, array $params): bool => $value > $params['min'],
+      message: $message ?? static fn(DateTimeImmutable $value, array $params): string => "Must be after {$params['min']->format(DateTimeInterface::ATOM)}",
       params: ['min' => $minDate]
     ));
   }
@@ -117,8 +117,8 @@ final class DateSchema extends CoercibleSchema {
     return $this->addRule(new Rule(
       name: 'before',
       code: 'too_late',
-      check: static fn(mixed $value, array $params): bool => $value < $params['max'],
-      message: $message ?? static fn(mixed $value, array $params): string => "Must be before {$params['max']->format(DateTimeInterface::ATOM)}",
+      check: static fn(DateTimeImmutable $value, array $params): bool => $value < $params['max'],
+      message: $message ?? static fn(DateTimeImmutable $value, array $params): string => "Must be before {$params['max']->format(DateTimeInterface::ATOM)}",
       params: ['max' => $maxDate]
     ));
   }
@@ -130,8 +130,8 @@ final class DateSchema extends CoercibleSchema {
     return $this->addRule(new Rule(
       name: 'between',
       code: 'out_of_range',
-      check: static fn(mixed $value, array $params): bool => $value >= $params['min'] && $value <= $params['max'],
-      message: $message ?? static fn(mixed $value, array $params): string => "Must be between {$params['min']->format(DateTimeInterface::ATOM)} and {$params['max']->format(DateTimeInterface::ATOM)}",
+      check: static fn(DateTimeImmutable $value, array $params): bool => $value >= $params['min'] && $value <= $params['max'],
+      message: $message ?? static fn(DateTimeImmutable $value, array $params): string => "Must be between {$params['min']->format(DateTimeInterface::ATOM)} and {$params['max']->format(DateTimeInterface::ATOM)}",
       params: ['min' => $minDate, 'max' => $maxDate]
     ));
   }
