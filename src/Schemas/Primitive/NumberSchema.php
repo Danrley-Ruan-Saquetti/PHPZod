@@ -121,9 +121,23 @@ final class NumberSchema extends CoercibleSchema {
     return $this->addRule(new Rule(
       name: 'multipleOf',
       code: 'not_multiple',
-      check: static fn(int|float $value, array $params): bool => fmod($value, $params['divisor']) === 0.0,
+      check: static function (int|float $value, array $params): bool {
+        if (is_int($value) && is_int($params['divisor'])) {
+          return $value % $params['divisor'] === 0;
+        }
+
+        $scale = 10 ** $params['precision'];
+
+        $scaledValue = (int) round($value * $scale);
+        $scaledDivisor = (int) round($params['divisor'] * $scale);
+
+        return $scaledValue % $scaledDivisor === 0;
+      },
       message: $message ?? static fn(int|float $value, array $params): string => "Must be a multiple of {$params['divisor']}",
-      params: ['divisor' => $divisor]
+      params: [
+        'divisor' => $divisor,
+        'precision' => $precision
+      ]
     ));
   }
 }
