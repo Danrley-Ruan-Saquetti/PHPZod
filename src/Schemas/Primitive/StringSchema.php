@@ -18,10 +18,18 @@ final class StringSchema extends CoercibleSchema {
     }
 
     if (!$this->coerce) {
-      return ParseResult::fail([new Issue($path, 'Expected string, received ' . gettype($value), 'invalid_type')]);
+      return $this->invalidStringType($value, $path);
     }
 
-    return ParseResult::ok((string) $value);
+    if (
+      is_scalar($value)
+      || $value === null
+      || is_object($value) && method_exists($value, '__toString')
+    ) {
+      return ParseResult::ok((string) $value);
+    }
+
+    return $this->invalidStringType($value, $path);
   }
 
   public function min(int $length, string|Closure|null $message = null): static {
@@ -149,5 +157,15 @@ final class StringSchema extends CoercibleSchema {
 
   public function toUpperCase(): static {
     return $this->transform(static fn(string $value): string => mb_strtoupper($value));
+  }
+
+  private function invalidStringType(mixed $value, array $path): ParseResult {
+    return ParseResult::fail([
+      new Issue(
+        $path,
+        'Expected string, received ' . gettype($value),
+        'invalid_type'
+      )
+    ]);
   }
 }
