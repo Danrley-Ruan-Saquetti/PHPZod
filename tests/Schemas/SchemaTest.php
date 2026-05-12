@@ -2,15 +2,44 @@
 
 namespace Esliph\Validator\Tests\Schemas;
 
+use Closure;
+
+use Esliph\Validator\Errors\Issue;
 use PHPUnit\Framework\TestCase;
+
 use Esliph\Validator\Schemas\Schema;
 use Esliph\Validator\Results\ParseResult;
 use Esliph\Validator\Errors\ValidatorException;
+use Override;
 
 class TestSchema extends Schema {
 
+  /**
+   * @param Closure(mixed, array): ParseResult $checkType
+   * @param Closure(mixed, array): ParseResult $checkValid
+   */
+  public function __construct(
+    private ?Closure $checkType = null,
+    private ?Closure $checkValid = null
+  ) {
+  }
+
+  #[Override]
   protected function parseType(mixed $value, array $path = []): ParseResult {
-    return ParseResult::ok($value);
+    if ($this->checkType === null) {
+      return ParseResult::ok($value);
+    }
+
+    return ($this->checkType)($value, $path);
+  }
+
+  #[Override]
+  protected function validateType(mixed $value, array $path = []): ParseResult {
+    if ($this->checkValid === null) {
+      return parent::validateType($value, $path);
+    }
+
+    return ($this->checkValid)($value, $path);
   }
 }
 
@@ -129,6 +158,102 @@ class SchemaTest extends TestCase {
     $this->assertFalse($result->success);
     $this->assertNull($result->data);
     $this->assertNotEmpty($result->issues);
+  }
+
+  public function test_parseType_WithInvalidValueForCustomCheck_ShouldFail(): void {
+    $schema = new TestSchema(
+      checkType: static function ($value, $path) {
+        if ($value === 0) {
+          return ParseResult::fail([
+            new Issue(
+              path: $path,
+              message: 'Invalid value',
+              code: 'invalid_type'
+            )
+          ]);
+        }
+
+        return ParseResult::ok($value);
+      }
+    );
+
+    $result = $schema->safeParse(0);
+
+    $this->assertFalse($result->success);
+    $this->assertCount(1, $result->issues);
+    $this->assertSame('Invalid value', $result->issues[0]->message);
+    $this->assertSame('invalid_type', $result->issues[0]->code);
+  }
+
+  public function test_validType_WithInvalidValueForCustomCheck_ShouldFail(): void {
+    $schema = new TestSchema(
+      checkValid: static function ($value, $path) {
+        if ($value === 0) {
+          return ParseResult::fail([
+            new Issue(
+              path: $path,
+              message: 'Invalid value',
+              code: 'invalid_type'
+            )
+          ]);
+        }
+
+        return ParseResult::ok($value);
+      }
+    );
+
+    $result = $schema->safeParse(0);
+
+    $this->assertFalse($result->success);
+    $this->assertCount(1, $result->issues);
+    $this->assertSame('Invalid value', $result->issues[0]->message);
+    $this->assertSame('invalid_type', $result->issues[0]->code);
+  }
+
+  public function test_parseType_WithValidValueForCustomCheck_ShouldReturnSuccessResult(): void {
+    $schema = new TestSchema(
+      checkType: static function ($value, $path) {
+        if ($value === 0) {
+          return ParseResult::fail([
+            new Issue(
+              path: $path,
+              message: 'Invalid value',
+              code: 'invalid_type'
+            )
+          ]);
+        }
+
+        return ParseResult::ok($value);
+      }
+    );
+
+    $result = $schema->safeParse(1);
+
+    $this->assertTrue($result->success);
+    $this->assertSame(1, $result->data);
+  }
+
+  public function test_validType_WithValidValueForCustomCheck_ShouldReturnSuccessResult(): void {
+    $schema = new TestSchema(
+      checkValid: static function ($value, $path) {
+        if ($value === 0) {
+          return ParseResult::fail([
+            new Issue(
+              path: $path,
+              message: 'Invalid value',
+              code: 'invalid_type'
+            )
+          ]);
+        }
+
+        return ParseResult::ok($value);
+      }
+    );
+
+    $result = $schema->safeParse(1);
+
+    $this->assertTrue($result->success);
+    $this->assertSame(1, $result->data);
   }
 
   public function test_nullHandling_WithNullAndNoOptions_ShouldFail(): void {
