@@ -2,20 +2,30 @@
 
 namespace Esliph\Validator;
 
-use Esliph\Validator\Schemas\Primitive\StringSchema;
-use Esliph\Validator\Schemas\Primitive\NumberSchema;
 use Esliph\Validator\Schemas\Complex\ObjectSchema;
 use Esliph\Validator\Schemas\Complex\ArraySchema;
 use Esliph\Validator\Schemas\Complex\UnionSchema;
-use Esliph\Validator\Schemas\MixedSchema;
 use Esliph\Validator\Schemas\Primitive\BooleanSchema;
 use Esliph\Validator\Schemas\Primitive\DateSchema;
+use Esliph\Validator\Schemas\Primitive\StringSchema;
+use Esliph\Validator\Schemas\Primitive\NumberSchema;
+use Esliph\Validator\Schemas\Primitive\FloatSchema;
+use Esliph\Validator\Schemas\Primitive\IntegerSchema;
+use Esliph\Validator\Schemas\MixedSchema;
 use Esliph\Validator\Schemas\Schema;
 
 final class V {
 
   public static function number(): NumberSchema {
     return new NumberSchema();
+  }
+
+  public static function int(): IntegerSchema {
+    return new IntegerSchema();
+  }
+
+  public static function float(): FloatSchema {
+    return new FloatSchema();
   }
 
   public static function string(): StringSchema {

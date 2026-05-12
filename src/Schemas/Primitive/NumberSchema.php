@@ -2,45 +2,29 @@
 
 namespace Esliph\Validator\Schemas\Primitive;
 
+use Closure;
+use Override;
+
 use Esliph\Validator\Schemas\CoercibleSchema;
 use Esliph\Validator\Results\ParseResult;
 use Esliph\Validator\Errors\Issue;
 use Esliph\Validator\Validation\Rule;
-use Closure;
-use Override;
 
-final class NumberSchema extends CoercibleSchema {
-
-  protected bool $integer = false;
+class NumberSchema extends CoercibleSchema {
 
   #[Override]
   protected function parseType(mixed $value, array $path = []): ParseResult {
-    if ($this->coerce && !is_int($value) && !is_float($value)) {
-      if (is_bool($value)) {
-        return ParseResult::ok((int) $value);
-      }
-
-      if (is_numeric($value)) {
-        $value = $this->integer ? (int) $value : (float) $value;
-      }
+    if (is_int($value) || is_float($value)) {
+      return ParseResult::ok($value);
     }
 
-    if ($this->integer) {
-      if (!is_int($value)) {
-        return ParseResult::fail([new Issue($path, 'Expected integer, received ' . gettype($value), 'invalid_type')]);
-      }
-    } else if (!is_int($value) && !is_float($value)) {
-      return ParseResult::fail([new Issue($path, 'Expected number, received ' . gettype($value), 'invalid_type')]);
+    if ($this->coerce && is_numeric($value)) {
+      $value = str_contains($value, '.') ? (float) $value : (int) $value;
+
+      return ParseResult::ok($value);
     }
 
-    return ParseResult::ok($value);
-  }
-
-  public function int(): static {
-    $clone = clone $this;
-    $clone->integer = true;
-
-    return $clone;
+    return ParseResult::fail([new Issue($path, 'Expected number, received ' . gettype($value), 'invalid_type')]);
   }
 
   public function min(int|float $min, string|Closure|null $message = null): static {
