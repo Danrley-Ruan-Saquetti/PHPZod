@@ -16,7 +16,8 @@
   ],
   "scripts": {
     "test": "vendor/bin/phpunit",
-    "test:coverage": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-text"
+    "test:coverage": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-text",
+    "test:coverage:html": "php -d pcov.enabled=1 vendor/bin/phpunit --coverage-html cache/tests/coverage --coverage-text"
   },
   "autoload": {
     "psr-4": {

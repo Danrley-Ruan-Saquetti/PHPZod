@@ -1,0 +1,152 @@
+<?php
+
+namespace Esliph\Validator\Tests\Schemas;
+
+use Closure;
+
+use PHPUnit\Framework\TestCase;
+
+use Esliph\Validator\Schemas\Schema;
+use Esliph\Validator\Errors\ValidatorException;
+
+abstract class BaseSchemaTestCase extends TestCase {
+
+  abstract protected function createSchema(): Schema;
+
+  public static function provideAllInputTypes(): array {
+    return [
+      'null' => [null, 'null'],
+      'boolean_true' => [true, 'boolean'],
+      'boolean_false' => [false, 'boolean'],
+      'integer_zero' => [0, 'integer'],
+      'integer_positive' => [42, 'integer'],
+      'integer_negative' => [-100, 'integer'],
+      'integer_large' => [PHP_INT_MAX, 'integer'],
+      'float_zero' => [0.0, 'double'],
+      'float_positive' => [3.14159, 'double'],
+      'float_negative' => [-2.71828, 'double'],
+      'float_infinity' => [INF, 'double'],
+      'float_negative_infinity' => [-INF, 'double'],
+      'float_nan' => [NAN, 'double'],
+      'string_empty' => ['', 'string'],
+      'string_numeric' => ['123', 'string'],
+      'string_numeric_float' => ['45.67', 'string'],
+      'string_alpha' => ['abc', 'string'],
+      'string_special' => ['!@#$%', 'string'],
+      'string_whitespace' => ['   ', 'string'],
+      'array_empty' => [[], 'array'],
+      'array_indexed' => [['a', 'b', 'c'], 'array'],
+      'array_associative' => [['key' => 'value'], 'array'],
+      'object_stdclass' => [new \stdClass(), 'object'],
+      'object_closure' => [fn() => null, 'object'],
+      'resource' => [fopen('php://memory', 'r'), 'resource'],
+    ];
+  }
+
+  public function test_schema_WithNullValue_ShouldFailRequiredValidation(): void {
+    $schema = $this->createSchema();
+
+    $result = $schema->safeParse(null);
+
+    $this->assertFalse($result->success);
+    $this->assertEmpty($result->data);
+    $this->assertNotEmpty($result->issues);
+    $this->assertSame('required', $result->issues[0]->code);
+  }
+
+  public function test_schema_WithNullAndOptional_ShouldSucceed(): void {
+    $schema = $this->createSchema()->optional();
+
+    $result = $schema->safeParse(null);
+
+    $this->assertTrue($result->success);
+    $this->assertNull($result->data);
+    $this->assertEmpty($result->issues);
+  }
+
+  public function test_schema_WithNullAndDefaultValue_ShouldUseDefault(): void {
+    $defaultValue = $this->getDefaultValue();
+    $schema = $this->createSchema()->_default($defaultValue);
+
+    $result = $schema->safeParse(null);
+
+    $this->assertTrue($result->success);
+    $this->assertEquals($defaultValue, $result->data);
+  }
+
+  public function test_schema_Clone_ShouldCreateIndependentCopy(): void {
+    $schema = $this->createSchema();
+    $cloned = clone $schema;
+
+    $this->assertNotSame($schema, $cloned);
+  }
+
+  public function test_schema_WithTransform_ShouldModifyValue(): void {
+    $schema = $this->createSchema();
+    $schema = $schema->transform($this->getTransformFunction());
+
+    $result = $schema->safeParse($this->getValidValue());
+
+    $this->assertTrue($result->success);
+  }
+
+  public function test_schema_ParseWithInvalidType_ShouldThrowValidatorException(): void {
+    $this->expectException(ValidatorException::class);
+
+    $schema = $this->createSchema();
+    $schema->parse($this->getInvalidValue());
+  }
+
+  public function test_schema_SafeParseWithInvalidType_ShouldReturnFailedResult(): void {
+    $schema = $this->createSchema();
+
+    $result = $schema->safeParse($this->getInvalidValue());
+
+    $this->assertFalse($result->success);
+    $this->assertNotEmpty($result->issues);
+  }
+
+  public function test_schema_IsValidWithValidValue_ShouldReturnTrue(): void {
+    $schema = $this->createSchema();
+
+    $this->assertTrue($schema->isValid($this->getValidValue()));
+  }
+
+  public function test_schema_IsValidWithInvalidValue_ShouldReturnFalse(): void {
+    $schema = $this->createSchema();
+
+    $this->assertFalse($schema->isValid($this->getInvalidValue()));
+  }
+
+  public function test_schema_WithRefine_ShouldApplyCustomRule(): void {
+    $schema = $this->createSchema();
+    $schema = $schema->refine(
+      $this->getRefineCheck(),
+      'Custom validation failed'
+    );
+
+    $result = $schema->safeParse($this->getValidValue());
+
+    $this->assertTrue($result->success);
+  }
+
+  public function test_schema_WithMultipleTransforms_ShouldChain(): void {
+    $schema = $this->createSchema();
+    $schema = $schema->transform($this->getTransformFunction());
+    $schema = $schema->transform($this->getTransformFunction());
+
+    $result = $schema->safeParse($this->getValidValue());
+
+    $this->assertTrue($result->success);
+  }
+
+  abstract protected function getValidValue(): mixed;
+
+  abstract protected function getInvalidValue(): mixed;
+
+  abstract protected function getDefaultValue(): mixed;
+
+  abstract protected function getTransformFunction(): Closure;
+
+  abstract protected function getRefineCheck(): Closure;
+}

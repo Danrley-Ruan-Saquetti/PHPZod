@@ -16,6 +16,10 @@ test:
 	@docker compose --profile test run --rm validator composer run test -- $(ARGS)
 .PHONY: test
 
-coverage:
+cov:
 	@docker compose --profile coverage run --rm validator composer run test:coverage -- $(ARGS)
+.PHONY: coverage
+
+cov_html:
+	@docker compose --profile coverage run --rm validator composer run test:coverage:html -- $(ARGS)
 .PHONY: coverage
