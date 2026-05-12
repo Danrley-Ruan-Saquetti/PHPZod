@@ -3,7 +3,11 @@ FROM php:8.2-fpm
 RUN apt-get update && apt-get install -y \
   git \
   unzip \
-  zip
+  zip \
+  $PHPIZE_DEPS
+
+RUN pecl install pcov \
+  && docker-php-ext-enable pcov
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

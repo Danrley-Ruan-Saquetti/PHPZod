@@ -13,5 +13,9 @@ cli:
 .PHONY: cli
 
 test:
-	@docker compose --profile test run --rm composer run test -- $(ARGS)
+	@docker compose --profile test run --rm validator composer run test -- $(ARGS)
 .PHONY: test
+
+coverage:
+	@docker compose --profile coverage run --rm validator composer run test:coverage -- $(ARGS)
+.PHONY: coverage

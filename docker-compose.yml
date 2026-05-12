@@ -6,9 +6,11 @@ services:
     container_name: validator
     volumes:
       - .:/var/www
+      - ./docker/php/conf.d/pcov.ini:/usr/local/etc/php/conf.d/pcov.ini
     profiles:
       - cli
       - test
+      - coverage
 
   composer:
     image: composer:latest
