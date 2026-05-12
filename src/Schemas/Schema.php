@@ -59,6 +59,12 @@ abstract class Schema {
 
     $value = $typeResult->data;
 
+    $issues = $this->validateRules($value, $path);
+
+    if (!empty($issues)) {
+      return ParseResult::fail($issues);
+    }
+
     $typeResult = $this->validateType($value, $path);
 
     if (!$typeResult->success) {
@@ -66,12 +72,6 @@ abstract class Schema {
     }
 
     $value = $typeResult->data;
-
-    $issues = $this->validateRules($value, $path);
-
-    if (!empty($issues)) {
-      return ParseResult::fail($issues);
-    }
 
     $value = $this->applyTransforms($value);
 
