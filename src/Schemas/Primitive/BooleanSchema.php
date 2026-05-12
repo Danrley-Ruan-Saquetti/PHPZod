@@ -16,45 +16,51 @@ final class BooleanSchema extends CoercibleSchema {
     }
 
     if (!$this->coerce) {
-      return ParseResult::fail([
-        new Issue(
-          path: $path,
-          message: 'Expected boolean, received ' . gettype($value),
-          code: 'invalid_type'
-        )
-      ]);
+      return $this->invalidTypeBoolean($value, $path);
+    }
+
+    $value = $this->coerceToBoolean($value);
+
+    if ($value === null) {
+      return $this->invalidTypeBoolean($value, $path);
     }
 
     return ParseResult::ok($this->coerceToBoolean($value));
   }
 
-  private function coerceToBoolean(mixed $value): bool {
+  private function coerceToBoolean(mixed $value): ?bool {
     if (is_bool($value)) {
       return $value;
     }
 
     if (is_string($value)) {
-      $lower = mb_strtolower(trim($value));
-      if (in_array($lower, ['true', '1', 'yes', 'on'], true)) {
-        return true;
-      }
-      if (in_array($lower, ['false', '0', 'no', 'off', ''], true)) {
-        return false;
-      }
+      $value = mb_strtolower(trim($value));
+
+      return match ($value) {
+        'true', '1', 'yes', 'on' => true,
+        'false', '0', 'no', 'off', '' => false,
+        default => null,
+      };
     }
 
-    if (is_numeric($value)) {
-      return (bool) $value;
+    if (is_int($value)) {
+      return match ($value) {
+        1 => true,
+        0 => false,
+        default => null,
+      };
     }
 
-    if (is_null($value)) {
-      return false;
-    }
+    return null;
+  }
 
-    if (is_array($value)) {
-      return !empty($value);
-    }
-
-    return (bool) $value;
+  private function invalidTypeBoolean(mixed $value, array $path): ParseResult {
+    return ParseResult::fail([
+      new Issue(
+        path: $path,
+        message: 'Expected boolean, received ' . gettype($value),
+        code: 'invalid_type'
+      )
+    ]);
   }
 }
