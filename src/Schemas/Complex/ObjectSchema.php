@@ -63,6 +63,7 @@ final class ObjectSchema extends CoercibleSchema {
     return ParseResult::ok($value);
   }
 
+  #[Override]
   protected function validateType(mixed $value, array $path = []): ParseResult {
     $parsedValue = new \stdClass();
     $issues = [];

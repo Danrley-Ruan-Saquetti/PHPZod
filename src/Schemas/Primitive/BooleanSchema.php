@@ -25,7 +25,7 @@ final class BooleanSchema extends CoercibleSchema {
       return $this->invalidTypeBoolean($value, $path);
     }
 
-    return ParseResult::ok($this->coerceToBoolean($value));
+    return ParseResult::ok($value);
   }
 
   private function coerceToBoolean(mixed $value): ?bool {
