@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="tests/initialize.php" displayDetailsOnTestsThatTriggerWarnings="true" displayDetailsOnTestsThatTriggerDeprecations="true" displayDetailsOnPhpunitDeprecations="true" failOnDeprecation="true" colors="true">
+<phpunit bootstrap="tests/initialize.php" displayDetailsOnTestsThatTriggerWarnings="true" displayDetailsOnTestsThatTriggerDeprecations="true" displayDetailsOnPhpunitDeprecations="true" failOnDeprecation="true" colors="true" cacheDirectory="cache/tests" cacheResult="false">
   <testsuites>
     <testsuite name="all-tests">
       <directory>tests</directory>
     </testsuite>
   </testsuites>
+
+  <source>
+    <include>
+      <directory>src</directory>
+    </include>
+  </source>
 </phpunit>
