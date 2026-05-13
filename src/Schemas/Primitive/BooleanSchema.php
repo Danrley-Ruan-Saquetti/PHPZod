@@ -29,10 +29,6 @@ final class BooleanSchema extends CoercibleSchema {
   }
 
   private function coerceToBoolean(mixed $value): ?bool {
-    if (is_bool($value)) {
-      return $value;
-    }
-
     if (is_string($value)) {
       $value = mb_strtolower(trim($value));
 
