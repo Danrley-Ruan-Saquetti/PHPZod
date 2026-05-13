@@ -24,7 +24,13 @@ class NumberSchema extends CoercibleSchema {
       return ParseResult::ok($value);
     }
 
-    return ParseResult::fail([new Issue($path, 'Expected number, received ' . gettype($value), 'invalid_type')]);
+    return ParseResult::fail(
+      new Issue(
+        path: $path,
+        message: 'Expected number, received ' . gettype($value),
+        code: 'invalid_type'
+      )
+    );
   }
 
   public function min(int|float $min, string|Closure|null $message = null): static {

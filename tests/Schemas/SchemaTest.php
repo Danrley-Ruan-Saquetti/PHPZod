@@ -164,13 +164,13 @@ class SchemaTest extends TestCase {
     $schema = new TestSchema(
       checkType: static function ($value, $path) {
         if ($value === 0) {
-          return ParseResult::fail([
+          return ParseResult::fail(
             new Issue(
               path: $path,
               message: 'Invalid value',
               code: 'invalid_type'
             )
-          ]);
+          );
         }
 
         return ParseResult::ok($value);
@@ -189,13 +189,13 @@ class SchemaTest extends TestCase {
     $schema = new TestSchema(
       checkValid: static function ($value, $path) {
         if ($value === 0) {
-          return ParseResult::fail([
+          return ParseResult::fail(
             new Issue(
               path: $path,
               message: 'Invalid value',
               code: 'invalid_type'
             )
-          ]);
+          );
         }
 
         return ParseResult::ok($value);
@@ -214,13 +214,13 @@ class SchemaTest extends TestCase {
     $schema = new TestSchema(
       checkType: static function ($value, $path) {
         if ($value === 0) {
-          return ParseResult::fail([
+          return ParseResult::fail(
             new Issue(
               path: $path,
               message: 'Invalid value',
               code: 'invalid_type'
             )
-          ]);
+          );
         }
 
         return ParseResult::ok($value);
@@ -237,13 +237,13 @@ class SchemaTest extends TestCase {
     $schema = new TestSchema(
       checkValid: static function ($value, $path) {
         if ($value === 0) {
-          return ParseResult::fail([
+          return ParseResult::fail(
             new Issue(
               path: $path,
               message: 'Invalid value',
               code: 'invalid_type'
             )
-          ]);
+          );
         }
 
         return ParseResult::ok($value);

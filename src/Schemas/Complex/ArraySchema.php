@@ -39,23 +39,23 @@ final class ArraySchema extends CoercibleSchema {
     }
 
     if (!is_array($value)) {
-      return ParseResult::fail([
+      return ParseResult::fail(
         new Issue(
           path: $path,
           message: 'Expected array, received ' . gettype($value),
           code: 'invalid_type'
         )
-      ]);
+      );
     }
 
     if ($this->isAssociativeArray($value)) {
-      return ParseResult::fail([
+      return ParseResult::fail(
         new Issue(
           path: $path,
           message: 'Expected indexed array, received object',
           code: 'invalid_type'
         )
-      ]);
+      );
     }
 
     return ParseResult::ok($value);
@@ -81,7 +81,7 @@ final class ArraySchema extends CoercibleSchema {
     }
 
     if (!empty($issues)) {
-      return ParseResult::fail($issues);
+      return ParseResult::fails($issues);
     }
 
     return ParseResult::ok($parsedValue);

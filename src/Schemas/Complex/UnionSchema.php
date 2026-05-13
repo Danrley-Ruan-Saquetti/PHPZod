@@ -40,6 +40,6 @@ final class UnionSchema extends Schema {
       $issues = array_merge($issues, $result->issues);
     }
 
-    return ParseResult::fail($issues);
+    return ParseResult::fails($issues);
   }
 }

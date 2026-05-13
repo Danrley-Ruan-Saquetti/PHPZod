@@ -51,12 +51,12 @@ final class BooleanSchema extends CoercibleSchema {
   }
 
   private function invalidTypeBoolean(mixed $value, array $path): ParseResult {
-    return ParseResult::fail([
+    return ParseResult::fail(
       new Issue(
         path: $path,
         message: 'Expected boolean, received ' . gettype($value),
         code: 'invalid_type'
       )
-    ]);
+    );
   }
 }

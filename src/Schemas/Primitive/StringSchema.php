@@ -160,12 +160,12 @@ final class StringSchema extends CoercibleSchema {
   }
 
   private function invalidStringType(mixed $value, array $path): ParseResult {
-    return ParseResult::fail([
+    return ParseResult::fail(
       new Issue(
         $path,
         'Expected string, received ' . gettype($value),
         'invalid_type'
       )
-    ]);
+    );
   }
 }

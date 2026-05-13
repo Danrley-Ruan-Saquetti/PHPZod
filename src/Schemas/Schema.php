@@ -36,19 +36,21 @@ abstract class Schema {
    */
   protected function _parse(mixed $value, array $path = []): ParseResult {
     if (is_null($value)) {
-      if ($this->hasDefault) {
-        $value = $this->default instanceof Closure ? ($this->default)() : $this->default;
-      } else if ($this->isOptional) {
-        return ParseResult::ok();
-      } else {
-        return ParseResult::fail([
+      if (!$this->hasDefault) {
+        if ($this->isOptional) {
+          return ParseResult::ok();
+        }
+
+        return ParseResult::fail(
           new Issue(
             path: $path,
             message: 'Value is required',
             code: 'required'
           )
-        ]);
+        );
       }
+
+      $value = $this->default instanceof Closure ? ($this->default)() : $this->default;
     }
 
     $typeResult = $this->parseType($value, $path);
@@ -62,7 +64,7 @@ abstract class Schema {
     $issues = $this->validateRules($value, $path);
 
     if (!empty($issues)) {
-      return ParseResult::fail($issues);
+      return ParseResult::fails($issues);
     }
 
     $typeResult = $this->validateType($value, $path);
@@ -99,7 +101,11 @@ abstract class Schema {
 
     foreach ($this->rules as $rule) {
       if ($rule->validate($value) === false) {
-        $issues[] = new Issue($path, $rule->resolveMessage($value), $rule->code);
+        $issues[] = new Issue(
+          path: $path,
+          message: $rule->resolveMessage($value),
+          code: $rule->code
+        );
       }
     }
 

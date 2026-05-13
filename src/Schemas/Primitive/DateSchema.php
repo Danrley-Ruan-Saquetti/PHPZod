@@ -25,13 +25,13 @@ final class DateSchema extends CoercibleSchema {
     }
 
     if (!$this->coerce) {
-      return ParseResult::fail([
+      return ParseResult::fail(
         new Issue(
           path: $path,
           message: 'Expected DateTimeImmutable, received ' . gettype($value),
           code: 'invalid_type'
         )
-      ]);
+      );
     }
 
     if (is_int($value)) {
@@ -39,13 +39,13 @@ final class DateSchema extends CoercibleSchema {
     }
 
     if (!is_string($value)) {
-      return ParseResult::fail([
+      return ParseResult::fail(
         new Issue(
           path: $path,
           message: 'Expected DateTimeImmutable, received ' . gettype($value),
           code: 'invalid_type'
         )
-      ]);
+      );
     }
 
     try {
@@ -53,13 +53,13 @@ final class DateSchema extends CoercibleSchema {
         $date = DateTimeImmutable::createFromFormat($this->format, $value, $this->timezone);
 
         if ($date === false) {
-          return ParseResult::fail([
+          return ParseResult::fail(
             new Issue(
               path: $path,
               message: 'Invalid date string',
               code: 'invalid_date'
             )
-          ]);
+          );
         }
 
         return ParseResult::ok($date);
@@ -67,13 +67,13 @@ final class DateSchema extends CoercibleSchema {
 
       return ParseResult::ok(new DateTimeImmutable($value, $this->timezone));
     } catch (Exception) {
-      return ParseResult::fail([
+      return ParseResult::fail(
         new Issue(
           path: $path,
           message: 'Invalid date string',
           code: 'invalid_date'
         )
-      ]);
+      );
     }
   }
 

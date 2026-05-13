@@ -38,26 +38,26 @@ final class ObjectSchema extends CoercibleSchema {
   protected function parseType(mixed $value, array $path = []): ParseResult {
     if ($this->coerce && is_array($value)) {
       if (!$this->isAssociativeArray($value)) {
-        return ParseResult::fail([
+        return ParseResult::fail(
           new Issue(
             path: $path,
             message: 'Expected object or associative array, received indexed array',
             code: 'invalid_type'
           )
-        ]);
+        );
       }
 
       return ParseResult::ok((object) $value);
     }
 
     if (!is_object($value)) {
-      return ParseResult::fail([
+      return ParseResult::fail(
         new Issue(
           path: $path,
           message: 'Expected object, received ' . gettype($value),
           code: 'invalid_type'
         )
-      ]);
+      );
     }
 
     return ParseResult::ok($value);
@@ -114,7 +114,7 @@ final class ObjectSchema extends CoercibleSchema {
     }
 
     if (!empty($issues)) {
-      return ParseResult::fail($issues);
+      return ParseResult::fails($issues);
     }
 
     return ParseResult::ok($parsedValue);

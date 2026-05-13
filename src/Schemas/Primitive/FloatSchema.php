@@ -23,6 +23,12 @@ class FloatSchema extends NumberSchema {
       return ParseResult::ok((float) $value);
     }
 
-    return ParseResult::fail([new Issue($path, 'Expected float, received ' . gettype($value), 'invalid_type')]);
+    return ParseResult::fail(
+      new Issue(
+        path: $path,
+        message: 'Expected float, received ' . gettype($value),
+        code: 'invalid_type'
+      )
+    );
   }
 }

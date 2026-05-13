@@ -23,10 +23,17 @@ readonly final class ParseResult {
     );
   }
 
+  public static function fail(Issue $issue): self {
+    return new self(
+      success: false,
+      issues: [$issue]
+    );
+  }
+
   /**
    * @param Issue[] $issues
    */
-  public static function fail(array $issues): self {
+  public static function fails(array $issues): self {
     return new self(
       success: false,
       issues: $issues

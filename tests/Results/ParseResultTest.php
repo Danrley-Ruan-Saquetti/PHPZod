@@ -166,8 +166,8 @@ class ParseResultTest extends TestCase {
     $this->assertSame($data, $result->data);
   }
 
-  public function test_fail_WithEmptyIssuesArray_ShouldReturnFailure(): void {
-    $result = ParseResult::fail([]);
+  public function test_fails_WithEmptyIssuesArray_ShouldReturnFailure(): void {
+    $result = ParseResult::fails([]);
 
     $this->assertFalse($result->success);
     $this->assertNull($result->data);
@@ -178,7 +178,7 @@ class ParseResultTest extends TestCase {
   public function test_fail_WithSingleIssue_ShouldStoreCorrectly(): void {
     $issue = new Issue(['field'], 'Error message', 'CODE_001');
 
-    $result = ParseResult::fail([$issue]);
+    $result = ParseResult::fail($issue);
 
     $this->assertFalse($result->success);
     $this->assertNull($result->data);
@@ -193,7 +193,7 @@ class ParseResultTest extends TestCase {
       new Issue(['username'], 'Username taken', 'USER_001'),
     ];
 
-    $result = ParseResult::fail($issues);
+    $result = ParseResult::fails($issues);
 
     $this->assertFalse($result->success);
     $this->assertNull($result->data);
@@ -201,13 +201,13 @@ class ParseResultTest extends TestCase {
     $this->assertSame($issues, $result->issues);
   }
 
-  public function test_fail_WithManyIssues_ShouldStoreAllCorrectly(): void {
+  public function test_fails_WithManyIssues_ShouldStoreAllCorrectly(): void {
     $issues = [];
     for ($i = 0; $i < 50; $i++) {
       $issues[] = new Issue(["field_{$i}"], "Error {$i}", "CODE_{$i}");
     }
 
-    $result = ParseResult::fail($issues);
+    $result = ParseResult::fails($issues);
 
     $this->assertFalse($result->success);
     $this->assertCount(50, $result->issues);
@@ -217,7 +217,7 @@ class ParseResultTest extends TestCase {
   public function test_fail_WithIssuesAtRootLevel_ShouldStoreCorrectly(): void {
     $issue = new Issue([], 'Root validation error', 'ROOT_001');
 
-    $result = ParseResult::fail([$issue]);
+    $result = ParseResult::fail($issue);
 
     $this->assertFalse($result->success);
     $this->assertCount(1, $result->issues);
@@ -227,7 +227,7 @@ class ParseResultTest extends TestCase {
   public function test_fail_WithIssuesAtNestedLevel_ShouldStoreCorrectly(): void {
     $issue = new Issue(['user', 'profile', 'email'], 'Invalid email', 'EMAIL_001');
 
-    $result = ParseResult::fail([$issue]);
+    $result = ParseResult::fail($issue);
 
     $this->assertFalse($result->success);
     $this->assertCount(1, $result->issues);
@@ -247,8 +247,8 @@ class ParseResultTest extends TestCase {
     $issue1 = new Issue(['field1'], 'Error 1', 'CODE_001');
     $issue2 = new Issue(['field2'], 'Error 2', 'CODE_002');
 
-    $result1 = ParseResult::fail([$issue1]);
-    $result2 = ParseResult::fail([$issue2]);
+    $result1 = ParseResult::fail($issue1);
+    $result2 = ParseResult::fail($issue2);
 
     $this->assertNotSame($result1, $result2);
     $this->assertSame($issue1, $result1->issues[0]);
@@ -312,7 +312,7 @@ class ParseResultTest extends TestCase {
       new Issue(['user', 'password'], 'Too short', 'PASS_001'),
     ];
 
-    $result = ParseResult::fail($issues);
+    $result = ParseResult::fails($issues);
 
     $this->assertFalse($result->success);
     $this->assertSame('user.email', $result->issues[0]->pathString());
@@ -327,14 +327,14 @@ class ParseResultTest extends TestCase {
   }
 
   public function test_successProperty_IsCorrectlySetByFail(): void {
-    $result = ParseResult::fail([]);
+    $result = ParseResult::fails([]);
 
     $this->assertIsBool($result->success);
     $this->assertFalse($result->success);
   }
 
   public function test_dataProperty_IsNullByDefaultInFail(): void {
-    $result = ParseResult::fail([new Issue(['field'], 'Error', 'CODE')]);
+    $result = ParseResult::fail(new Issue(['field'], 'Error', 'CODE'));
 
     $this->assertNull($result->data);
   }
@@ -374,14 +374,14 @@ class ParseResultTest extends TestCase {
     $this->assertTrue($result->data['users'][0]['metadata']['active']);
   }
 
-  public function test_fail_WithDuplicatePathIssues_ShouldStoreAllCorrectly(): void {
+  public function test_fails_WithDuplicatePathIssues_ShouldStoreAllCorrectly(): void {
     $issues = [
       new Issue(['email'], 'Invalid format', 'EMAIL_001'),
       new Issue(['email'], 'Already registered', 'EMAIL_002'),
       new Issue(['email'], 'Contains forbidden words', 'EMAIL_003'),
     ];
 
-    $result = ParseResult::fail($issues);
+    $result = ParseResult::fails($issues);
 
     $this->assertFalse($result->success);
     $this->assertCount(3, $result->issues);
@@ -427,7 +427,7 @@ class ParseResultTest extends TestCase {
       new Issue(['password'], 'Password must be at least 8 characters', 'PASS_TOO_SHORT'),
     ];
 
-    $result = ParseResult::fail($issues);
+    $result = ParseResult::fails($issues);
 
     $this->assertFalse($result->success);
     $this->assertNull($result->data);
@@ -458,7 +458,7 @@ class ParseResultTest extends TestCase {
 
   public function test_fail_CanBeUsedInConditionals_FailureCase(): void {
     $issue = new Issue(['field'], 'Error', 'CODE');
-    $result = ParseResult::fail([$issue]);
+    $result = ParseResult::fail($issue);
 
     if (!$result->success) {
       $issues = $result->issues;
@@ -507,8 +507,8 @@ class ParseResultTest extends TestCase {
 
   public function test_typeConsistency_FailAlwaysHasSuccessFalse(): void {
     $results = [
-      ParseResult::fail([]),
-      ParseResult::fail([new Issue(['f'], 'E', 'C')]),
+      ParseResult::fails([]),
+      ParseResult::fails([new Issue(['f'], 'E', 'C')]),
     ];
 
     foreach ($results as $result) {
@@ -518,8 +518,8 @@ class ParseResultTest extends TestCase {
 
   public function test_typeConsistency_FailAlwaysHasNullData(): void {
     $results = [
-      ParseResult::fail([]),
-      ParseResult::fail([new Issue(['f'], 'E', 'C')]),
+      ParseResult::fails([]),
+      ParseResult::fails([new Issue(['f'], 'E', 'C')]),
     ];
 
     foreach ($results as $result) {
@@ -533,7 +533,7 @@ class ParseResultTest extends TestCase {
       new Issue(['field2'], 'Error 2', 'CODE_002'),
     ];
 
-    $result = ParseResult::fail($issues);
+    $result = ParseResult::fails($issues);
 
     foreach ($result->issues as $issue) {
       $this->assertInstanceOf(Issue::class, $issue);
