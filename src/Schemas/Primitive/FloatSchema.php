@@ -16,7 +16,7 @@ class FloatSchema extends NumberSchema {
     }
 
     if (is_int($value)) {
-      return ParseResult::ok((int) $value);
+      return ParseResult::ok((float) $value);
     }
 
     if ($this->coerce && is_string($value) && is_numeric($value)) {
