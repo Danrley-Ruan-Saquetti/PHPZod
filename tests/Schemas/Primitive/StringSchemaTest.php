@@ -2,20 +2,17 @@
 
 namespace Esliph\Validator\Tests\Schemas\Primitive;
 
+use Esliph\Validator\Schemas\Primitive\StringSchema;
+use Esliph\Validator\Schemas\CoercibleSchema;
+use Esliph\Validator\Tests\Schemas\BaseCoercibleSchemaTestCase;
+
 use Closure;
 use Override;
 
-use PHPUnit\Framework\Attributes\DataProvider;
-
-use Esliph\Validator\Schemas\Schema;
-use Esliph\Validator\Schemas\Primitive\StringSchema;
-
-use Esliph\Validator\Tests\Schemas\BaseSchemaTestCase;
-
-class StringSchemaTest extends BaseSchemaTestCase {
+class StringSchemaTest extends BaseCoercibleSchemaTestCase {
 
   #[Override]
-  protected function createSchema(): Schema {
+  protected function createSchemaCoercible(): CoercibleSchema {
     return new StringSchema();
   }
 

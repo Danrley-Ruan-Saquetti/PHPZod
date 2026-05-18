@@ -2,21 +2,19 @@
 
 namespace Esliph\Validator\Tests\Schemas\Primitive;
 
+use Esliph\Validator\Errors\ValidatorException;
+use Esliph\Validator\Schemas\CoercibleSchema;
+use Esliph\Validator\Schemas\Primitive\BooleanSchema;
+
+use Esliph\Validator\Tests\Schemas\BaseCoercibleSchemaTestCase;
+
 use Closure;
 use Override;
 
-use PHPUnit\Framework\Attributes\DataProvider;
-
-use Esliph\Validator\Schemas\Schema;
-use Esliph\Validator\Errors\ValidatorException;
-use Esliph\Validator\Schemas\Primitive\BooleanSchema;
-
-use Esliph\Validator\Tests\Schemas\BaseSchemaTestCase;
-
-class BooleanSchemaTest extends BaseSchemaTestCase {
+class BooleanSchemaTest extends BaseCoercibleSchemaTestCase {
 
   #[Override]
-  protected function createSchema(): Schema {
+  protected function createSchemaCoercible(): CoercibleSchema {
     return new BooleanSchema();
   }
 

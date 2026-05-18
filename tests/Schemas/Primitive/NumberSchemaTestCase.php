@@ -2,18 +2,18 @@
 
 namespace Esliph\Validator\Tests\Schemas\Primitive;
 
+use Esliph\Validator\Schemas\CoercibleSchema;
+use Esliph\Validator\Schemas\Primitive\NumberSchema;
+
+use Esliph\Validator\Tests\Schemas\BaseCoercibleSchemaTestCase;
+
 use Closure;
 use Override;
 
-use Esliph\Validator\Schemas\Schema;
-use Esliph\Validator\Schemas\Primitive\NumberSchema;
-
-use Esliph\Validator\Tests\Schemas\BaseSchemaTestCase;
-
-abstract class NumberSchemaTestCase extends BaseSchemaTestCase {
+abstract class NumberSchemaTestCase extends BaseCoercibleSchemaTestCase {
 
   #[Override]
-  protected function createSchema(): Schema {
+  protected function createSchemaCoercible(): CoercibleSchema {
     return $this->createNumberSchema();
   }
 
