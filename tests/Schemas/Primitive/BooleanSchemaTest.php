@@ -2,6 +2,8 @@
 
 namespace Esliph\Validator\Tests\Schemas\Primitive;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 use Esliph\Validator\Errors\ValidatorException;
 use Esliph\Validator\Schemas\CoercibleSchema;
 use Esliph\Validator\Schemas\Primitive\BooleanSchema;
